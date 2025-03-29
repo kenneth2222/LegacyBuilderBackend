@@ -3,7 +3,7 @@ const cors = require("cors");
 require('dotenv').config();
 require('./config/database');
 const PORT = process.env.PORT;
-// const userRouter = require('./routes/userRouter');
+const userRouter = require('./routes/userRouter');
 // const roomRouter = require('./routes/roomRouter');
 // const categoryRouter = require('./routes/categoryRouter');
 // const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
@@ -95,7 +95,7 @@ const swaggerDefinition = {
   
 
 
-// app.use('/api/v1', userRouter);
+app.use('/api/v1', userRouter);
 // app.use(userRouter);
 // app.use(roomRouter);
 // app.use(categoryRouter);
