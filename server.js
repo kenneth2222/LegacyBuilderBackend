@@ -42,7 +42,7 @@ const swaggerDefinition = {
       title: 'Legacy Builder',
       version: '1.0.0',
       description:
-        'This is the documentation for LegacyBuilder Product',
+        'This is the documentation for LegacyBuilder Website',
       license: {
         name:'Base_URL: https://legacybuilderbackend.onrender.com',
       },
