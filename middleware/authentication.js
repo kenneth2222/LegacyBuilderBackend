@@ -16,13 +16,23 @@ exports.authenticate = async (req, res, next) => {
       });
     }
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+<<<<<<< HEAD
+=======
+    // console.log("Decoded Token:", decodedToken);
+    
+>>>>>>> 32eb3dcb36906562f2803f0370898fe2e718ca1e
     const user = await userModel.findById(decodedToken.userId);
         if (!user) {
       return res.status(404).json({
         message: "Authentication Failed: User not found",
       });
     }
+<<<<<<< HEAD
     if (user.isLoggedIn !== decodedToken.isLoggedIn){
+=======
+    // if (user.isLoggedIn != decodedToken.isLoggedIn){
+      if (!user.isLoggedIn){
+>>>>>>> 32eb3dcb36906562f2803f0370898fe2e718ca1e
       return res.status(400).json({
         message: "Authentication Failed: User is not logged in",
       })

@@ -72,8 +72,13 @@ exports.verify = (link, firstName) => {
                 </div>
                 <div class="content">
                     <p>Hello ${firstName},</p>
+<<<<<<< HEAD
                     <p>Thank you for signing up to our platform. We are excited to have you on board.</p>
                     <p>Please click the button below to verify your account:</p>
+=======
+                    <p>Thank you for signing up to Legacy Builder. We are excited to have you on board.</p>
+                    <p>Please click the button below to verify your account to get started:</p>
+>>>>>>> 32eb3dcb36906562f2803f0370898fe2e718ca1e
                     <div class="button-container">
                         <a href="${link}" class="button">Verify My Account</a>
                     </div>
