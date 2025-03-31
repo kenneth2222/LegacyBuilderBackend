@@ -47,7 +47,7 @@ const swaggerDefinition = {
         name:'Base_URL: https://legacybuilderbackend.onrender.com',
       },
       contact: {
-        name: 'Ai Engineer',
+        name: 'Legacy Builder Website',
         url: 'https://www.linkedin.com/in/obumneme-kenneth/',
       },
     },
