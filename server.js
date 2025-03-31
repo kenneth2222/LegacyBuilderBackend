@@ -29,8 +29,8 @@ app.use(express.json());
 // app.use(passport.session());
 // app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
 app.use(cors({
-//   origin: ['http://localhost:2025', 'https://authentication-4hec.onrender.com'], // Allow both dev and production servers
- origin: ['http://localhost:2025'], 
+  origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
+//  origin: ['http://localhost:2025'], 
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true // This allows cookies & session handling
 }));
@@ -44,7 +44,7 @@ const swaggerDefinition = {
       description:
         'This is the documentation for LegacyBuilder Product',
       license: {
-        name:'Base_URL: https://authentication-4hec.onrender.com',
+        name:'Base_URL: https://legacybuilderbackend.onrender.com',
       },
       contact: {
         name: 'Ai Engineer',
@@ -66,10 +66,10 @@ const swaggerDefinition = {
 
     //Two urls in the server object, one is the development server and the other is the production server
     servers: [
-        // {
-        //     url: 'https://authentication-4hec.onrender.com',
-        //     description: 'Production server',
-        //   },
+        {
+            url: 'https://legacybuilderbackend.onrender.com',
+            description: 'Production server',
+          },
       {
         url: 'http://localhost:2025',
         description: 'Development server',
@@ -85,7 +85,7 @@ const swaggerDefinition = {
   };
 
     app.get('/', (req, res) => {
-        res.send('Welcome to Ai First Swagger Documentation');
+        res.send('Welcome to Legacy Builders Documentation');
     });
 
   const swaggerSpec = swaggerJSDoc(options);
