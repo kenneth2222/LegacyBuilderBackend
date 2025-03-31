@@ -16,13 +16,16 @@ exports.authenticate = async (req, res, next) => {
       });
     }
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    // console.log("Decoded Token:", decodedToken);
+    
     const user = await userModel.findById(decodedToken.userId);
         if (!user) {
       return res.status(404).json({
         message: "Authentication Failed: User not found",
       });
     }
-    if (user.isLoggedIn !== decodedToken.isLoggedIn){
+    // if (user.isLoggedIn != decodedToken.isLoggedIn){
+      if (!user.isLoggedIn){
       return res.status(400).json({
         message: "Authentication Failed: User is not logged in",
       })
