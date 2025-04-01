@@ -105,7 +105,6 @@ const userRouter = require('express').Router();
  */
 userRouter.post('/user', registerUser);
 
-
 /**
  * @swagger
  * /user/login/:
@@ -176,7 +175,6 @@ userRouter.post('/user', registerUser);
  *                   type: string
  *                   example: "Error logging user in"
  */
-
 userRouter.post('/user/login/', loginUser);
 
 /**
