@@ -84,4 +84,21 @@ exports.changeUserPasswordSchema = joi.object().keys({
     })
 });
 
+exports.resetUserPasswordSchema = joi.object().keys({
+  newPassword: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
+    .messages({
+      "any.required": "Password is required",
+      "string.empty": "Password cannot be empty",
+      "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character [!@#$%^&*]"
+  }),
+  
+      confirmPassword: joi.string().trim()
+      .valid(joi.ref('newPassword'))
+      .required()
+      .messages({
+          "any.only": "Passwords do not match",
+          'any.required': 'Confirm password is required'
+      })
+  });
+
 
