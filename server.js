@@ -6,10 +6,10 @@ const PORT = process.env.PORT;
 const userRouter = require('./routes/userRouter');
 // const roomRouter = require('./routes/roomRouter');
 // const categoryRouter = require('./routes/categoryRouter');
-// const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
-// const session = require('express-session');
-// const passport = require('passport');
-// require('./middleware/passport');
+const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
+const session = require('express-session');
+const passport = require('passport');
+require('./middleware/passport');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -19,14 +19,15 @@ const app = express();
 app.use(express.json());
 
 //This is used for the passport
-// app.use(session({
-//     secret: EXPRESS_SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// })) 
+app.use(session({
+    secret: EXPRESS_SECRET,
+    resave: false,
+    saveUninitialized: false
+})) 
+app.use(passport.initialize());
+app.use(passport.session());
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+
 // app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
 app.use(cors({
   origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
@@ -95,8 +96,8 @@ const swaggerDefinition = {
   
 
 
-app.use('/api/v1', userRouter);
-// app.use(userRouter);
+// app.use('/api/v1', userRouter);
+app.use(userRouter);
 // app.use(roomRouter);
 // app.use(categoryRouter);
 

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { verify, reset } = require('../utils/html');
 const { send_mail } = require('../middleware/nodemailer');
 const { validate } = require('../utils/utilities');
-const { registerAdminSchema,registerUserSchema, loginSchema, forgotPasswordSchema, changeUserPasswordSchema} = require('../middleware/validator');
+const { registerAdminSchema, registerUserSchema, loginSchema, forgotPasswordSchema, changeUserPasswordSchema, resetUserPasswordSchema} = require('../middleware/validator');
 
 
 exports.registerUser = async (req, res) => {
@@ -271,10 +271,13 @@ exports.resetUserPassword = async (req, res) => {
       })
     };
 
-    const { newPassword, confirmPassword } = req.body;
+    const validatedData = await validate(req.body, resetUserPasswordSchema)
+    const { newPassword, confirmPassword } = validatedData;
 
     if (!newPassword || !confirmPassword) {
-      return res.status(400).json({ message: "Both password fields are required" });
+      return res.status(400).json({ 
+        message: "Both password fields are required" 
+      });
     }
 
     if (newPassword !== confirmPassword) {
