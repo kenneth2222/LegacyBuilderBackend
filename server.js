@@ -6,10 +6,10 @@ const PORT = process.env.PORT;
 const userRouter = require('./routes/userRouter');
 // const roomRouter = require('./routes/roomRouter');
 // const categoryRouter = require('./routes/categoryRouter');
-// const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
-// const session = require('express-session');
-// const passport = require('passport');
-// require('./middleware/passport');
+const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
+const session = require('express-session');
+const passport = require('passport');
+require('./middleware/passport');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -19,18 +19,19 @@ const app = express();
 app.use(express.json());
 
 //This is used for the passport
-// app.use(session({
-//     secret: EXPRESS_SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// })) 
+app.use(session({
+    secret: EXPRESS_SECRET,
+    resave: false,
+    saveUninitialized: false
+})) 
+app.use(passport.initialize());
+app.use(passport.session());
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+
 // app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
 app.use(cors({
-//   origin: ['http://localhost:2025', 'https://authentication-4hec.onrender.com'], // Allow both dev and production servers
- origin: ['http://localhost:2025'], 
+  origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
+//  origin: ['http://localhost:2025'], 
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true // This allows cookies & session handling
 }));
@@ -42,12 +43,12 @@ const swaggerDefinition = {
       title: 'Legacy Builder',
       version: '1.0.0',
       description:
-        'This is the documentation for LegacyBuilder Product',
+        'This is the documentation for LegacyBuilder Website',
       license: {
-        name:'Base_URL: https://authentication-4hec.onrender.com',
+        name:'Base_URL: https://legacybuilderbackend.onrender.com',
       },
       contact: {
-        name: 'Ai Engineer',
+        name: 'Legacy Builder Website',
         url: 'https://www.linkedin.com/in/obumneme-kenneth/',
       },
     },
@@ -66,10 +67,10 @@ const swaggerDefinition = {
 
     //Two urls in the server object, one is the development server and the other is the production server
     servers: [
-        // {
-        //     url: 'https://authentication-4hec.onrender.com',
-        //     description: 'Production server',
-        //   },
+        {
+            url: 'https://legacybuilderbackend.onrender.com',
+            description: 'Production server',
+          },
       {
         url: 'http://localhost:2025',
         description: 'Development server',
@@ -85,7 +86,7 @@ const swaggerDefinition = {
   };
 
     app.get('/', (req, res) => {
-        res.send('Welcome to Ai First Swagger Documentation');
+        res.send('Welcome to Legacy Builders Documentation');
     });
 
   const swaggerSpec = swaggerJSDoc(options);
@@ -95,8 +96,8 @@ const swaggerDefinition = {
   
 
 
-app.use('/api/v1', userRouter);
-// app.use(userRouter);
+// app.use('/api/v1', userRouter);
+app.use(userRouter);
 // app.use(roomRouter);
 // app.use(categoryRouter);
 
