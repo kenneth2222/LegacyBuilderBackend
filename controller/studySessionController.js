@@ -1,6 +1,6 @@
 const transactionPaystackModel = require("../model/transactionPaystack");
 const studySessionModel = require("../model/studySession");
-const studentModel = require('./model/Student');
+const studentModel = require('../model/student');
 
 
 exports.startSession = async (req, res) => {
