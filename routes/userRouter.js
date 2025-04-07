@@ -73,11 +73,11 @@ const userRouter = require('express').Router();
  *                       type: string
  *                       format: email
  *                       description: User's email address
- *                       example: "obusco4lyfe@gmail.com"
+ *                       example: "aiengineer@gmail.com"
  *                     username:
  *                       type: string
  *                       description: Unique username
- *                       example: "ken_tech"
+ *                       example: "kentech"
  *                     isVerified:
  *                       type: boolean
  *                       description: Whether the user's email is verified
