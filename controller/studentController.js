@@ -534,6 +534,10 @@ exports.uploadImage = async (req, res) => {
     try {
       // Compress the image using sharp
       await sharp(req.file.path)
+      .resize(60, 60, { 
+        fit: sharp.fit.inside,  // Ensures the image fits inside the specified dimensions while maintaining aspect ratio
+        withoutEnlargement: true  // Prevents enlarging small images
+      })
         .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
         .toFile(compressedFilePath);
 
