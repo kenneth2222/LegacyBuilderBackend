@@ -66,4 +66,5 @@ exports.getStudentWithSessions = async (studentId) => {
     console.error('Error fetching student:', error);
   }
 };
+
   
