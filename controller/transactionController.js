@@ -157,6 +157,8 @@ exports.verifyPaymentPaystack = async (req, res) => {
 
         //The req.query object contains the query parameters in the URL
         const { reference } = req.query;
+
+        console.log("Payment Reference:", reference);
         const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`,{
             headers: {
                 Authorization: `Bearer ${SECRET_KEY_PAYSTACK}`

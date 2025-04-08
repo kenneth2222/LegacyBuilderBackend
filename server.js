@@ -93,17 +93,10 @@ const swaggerDefinition = {
   const swaggerSpec = swaggerJSDoc(options);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-    
   
-
-
-
 app.use('/api/v1', studentRouter);
 app.use('/api/v1', transactionRouter);
 app.use(socialRouter);
-
-
-
 
 
 app.listen(PORT, () => {

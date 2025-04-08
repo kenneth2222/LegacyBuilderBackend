@@ -50,7 +50,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, cb) => {
       try {
-        let student = await student.findOne({ email: profile.emails[0].value });
+        let student = await studentModel.findOne({ email: profile.emails[0].value });
 
         const randomPassword = await bcrypt.hash(profile.id, 10);
         if (!student) {
