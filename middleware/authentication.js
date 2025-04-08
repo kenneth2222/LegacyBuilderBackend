@@ -1,4 +1,4 @@
-const userModel = require("../model/userModel");
+const studentModel = require("../model/student");
 const jwt = require("jsonwebtoken");
 
 exports.authenticate = async (req, res, next) => {
@@ -18,19 +18,19 @@ exports.authenticate = async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     // console.log("Decoded Token:", decodedToken);
     
-    const user = await userModel.findById(decodedToken.userId);
-        if (!user) {
+    const student = await studentModel.findById(decodedToken.studentId);
+        if (!student) {
       return res.status(404).json({
-        message: "Authentication Failed: User not found",
+        message: "Authentication Failed: Student not found",
       });
     }
     // if (user.isLoggedIn != decodedToken.isLoggedIn){
-      if (!user.isLoggedIn){
+      if (!student.isLoggedIn){
       return res.status(400).json({
         message: "Authentication Failed: User is not logged in",
       })
     }
-    req.user = decodedToken;
+    req.student = decodedToken;
 
     next();
   } catch (error) {
@@ -64,20 +64,20 @@ exports.adminAuth = async (req, res, next) => {
     }
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await userModel.findById(decodedToken.userId);
-    if (!user) {
+    const student = await studentModel.findById(decodedToken.userId);
+    if (!student) {
       return res.status(404).json({
         message: "Authentication Failed: User not found",
       });
     }
 
-    if (user.isAdmin !== true) {
+    if (student.isAdmin !== true) {
       return res.status(401).json({
         message: "Unauthorized: Please contact Admin",
       });
     }
 
-    req.user = decodedToken;
+    req.student = decodedToken;
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {

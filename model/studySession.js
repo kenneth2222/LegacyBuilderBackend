@@ -1,4 +1,4 @@
-
+const mongoose = require('mongoose');
 
 const studySessionSchema = new mongoose.Schema({
     studentId: { 
@@ -19,7 +19,7 @@ const studySessionSchema = new mongoose.Schema({
   }, {
     timestamps: true});
 
-    const studySessionModel = mongoose.model("studySession", studySessionSchema);
+    const studySession = mongoose.model("studySession", studySessionSchema);
     
-    module.exports = studySessionModel;
+    module.exports = studySession;
   

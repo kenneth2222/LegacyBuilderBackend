@@ -1,6 +1,6 @@
 const joi = require("joi");
 
-exports.registerUserSchema = joi.object().keys({
+exports.registerStudentSchema = joi.object().keys({
   fullName: joi.string().min(3).trim().pattern(/^[A-Za-z\s]+$/).required()
   .messages({
     'any.required': 'Fullname is required',
@@ -19,13 +19,13 @@ exports.registerUserSchema = joi.object().keys({
     "string.empty": "Password cannot be empty",
     "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character [!@#$%^&*]"
 }),
-  username: joi.string().min(3).max(30).trim().pattern(/^[A-Za-z\s]+$/).required()
-  .messages({
-    'any.required': 'Username is required',
-    "string.empty": "Username cannot be empty",
-    "string.pattern.base": 'Username should only contain alphabets',
-    'string.min': 'Username should not be less than 3 letters'
-}),
+//   username: joi.string().min(3).max(30).trim().pattern(/^[A-Za-z\s]+$/).required()
+//   .messages({
+//     'any.required': 'Username is required',
+//     "string.empty": "Username cannot be empty",
+//     "string.pattern.base": 'Username should only contain alphabets',
+//     'string.min': 'Username should not be less than 3 letters'
+// }),
 
 confirmPassword: joi.string().trim()
 .valid(joi.ref('password'))
@@ -33,17 +33,37 @@ confirmPassword: joi.string().trim()
 .messages({
     "any.only": "Passwords do not match",
     'any.required': 'Confirm password is required'
-})
+}),
+
+enrolledSubjects: joi.array().items(
+  joi.string().valid(
+    'English',
+    'Mathematics',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'Literature in English',
+    'Economics',
+    'Geography',
+    'Government',
+    'History'
+  )
+),
 });
 
 exports.loginSchema = joi.object().keys({
-  username: joi.string().min(3).max(30).trim().pattern(/^[A-Za-z\s]+$/).required()
+  email: joi.string().trim().min(5).email().required()
   .messages({
-    'any.required': 'Username is required',
-    "string.empty": "Username cannot be empty",
-    "string.pattern.base": 'Username should only contain alphabets',
-    'string.min': 'Username should not be less than 3 letters'
+    'string.email': "Invalid email format",
+    "any.required": "Email is required"
 }),
+//   username: joi.string().min(3).max(30).trim().pattern(/^[A-Za-z\s]+$/).required()
+//   .messages({
+//     'any.required': 'Username is required',
+//     "string.empty": "Username cannot be empty",
+//     "string.pattern.base": 'Username should only contain alphabets',
+//     'string.min': 'Username should not be less than 3 letters'
+// }),
   password: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
   .messages({
     "any.required": "Password is required",
@@ -61,7 +81,7 @@ exports.forgotPasswordSchema = joi.object().keys({
 }),
 });
 
-exports.changeUserPasswordSchema = joi.object().keys({
+exports.changeStudentPasswordSchema = joi.object().keys({
   currentPassword: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
   .messages({
     "any.required": "Password is required",
@@ -84,7 +104,7 @@ exports.changeUserPasswordSchema = joi.object().keys({
     })
 });
 
-exports.resetUserPasswordSchema = joi.object().keys({
+exports.resetStudentPasswordSchema = joi.object().keys({
   newPassword: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
     .messages({
       "any.required": "Password is required",
