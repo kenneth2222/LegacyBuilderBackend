@@ -31,7 +31,7 @@ exports.initializePaymentKora = async (req, res) => {
         }
 
         const response = await axios.post("https://api.korapay.com/merchant/api/v1/charges/initialize", paymentData, {
-            
+
             headers: {
                 Authorization: `Bearer ${SECRET_KEY_KORA}`
             }
@@ -103,6 +103,14 @@ exports.verifyPaymentKora = async (req, res) => {
 exports.initialPaymentPaystack = async (req, res) => {
     try {
         const { email, amount } = req.body;
+
+        // console.log(email, amount)
+        if (!email || !amount  ) {
+            return res.status(400).json({ 
+                message: "Invalid input" 
+            });
+        }
+
 
         const paymentData = { 
             email,

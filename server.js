@@ -5,6 +5,7 @@ require('./config/database');
 const PORT = process.env.PORT;
 const userRouter = require('./routes/userRouter');
 const transactionRouter = require('./routes/transactionRouter');
+const socialRouter =  require('./routes/socialRouter');
 // const roomRouter = require('./routes/roomRouter');
 // const categoryRouter = require('./routes/categoryRouter');
 const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
@@ -97,9 +98,11 @@ const swaggerDefinition = {
   
 
 
-// app.use('/api/v1', userRouter);
-app.use(userRouter);
+// app.use(userRouter);
+app.use('/api/v1', userRouter);
 app.use(transactionRouter);
+app.use(socialRouter);
+
 
 // app.use(roomRouter);
 // app.use(categoryRouter);
