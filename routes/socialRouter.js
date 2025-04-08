@@ -133,7 +133,9 @@ socialRouter.get("/auth/google/login", passport.authenticate("google",  { failur
     });
 } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ 
+        message: "Internal Server Error" 
+    });
 }
 });
 

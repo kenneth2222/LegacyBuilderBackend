@@ -1,78 +1,79 @@
-const userModel = require('../model/userModel');
+// const userModel = require('../model/userModel');
+const studentModel = require('../model/student');
+const scoreBoardModel = require("../model/scoreBoard");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verify, reset } = require('../utils/html');
 const { send_mail } = require('../middleware/nodemailer');
 const { validate } = require('../utils/utilities');
-const { registerAdminSchema, registerUserSchema, loginSchema, forgotPasswordSchema, changeUserPasswordSchema, resetUserPasswordSchema} = require('../middleware/validator');
+const { registerAdminSchema, registerStudentSchema, loginSchema, forgotPasswordSchema, changeStudentPasswordSchema, resetStudentPasswordSchema} = require('../middleware/validator');
 
 
-exports.registerUser = async (req, res) => {
+exports.registerStudent = async (req, res) => {
   try {
-    const validatedData = await validate(req.body, registerUserSchema)
-    const { fullName, email, username, password } = validatedData;
+    const validatedData = await validate(req.body, registerStudentSchema)
+    const { fullName, email, password, enrolledSubjects } = validatedData;
    
-    // if (!fullName || !email || !username || !password || !confirmPassword) {
-    //   return res.status(400).json({
-    //     message: 'Input required for all field'
-    //   })
-    // };
+    
 
-    const existingEmail = await userModel.findOne({ email: email.toLowerCase() });
+    const existingEmail = await studentModel.findOne({ email: email.toLowerCase() });
 
     if (existingEmail) {
       return res.status(400).json({
         message: `${email.toLowerCase()} already exist`
       })
     };
-    const existingUsername = await userModel.findOne({ username: username.toLowerCase() });
-
-    if (existingUsername) 
-      return res.status(400).json({
-       message: `${username.toLowerCase()} is already taken`
     
-    });
 
     const saltedRound = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, saltedRound);
 
-    const user = new userModel({
+    const student = new studentModel({
       fullName,
       email: email.toLowerCase(),
-      username: username.toLowerCase(),
+      // username: username.toLowerCase(),
       password: hashedPassword,
+      enrolledSubjects,
     });
 
-    //  // Save user to DB
-    //  await user.save();
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    const link = `${req.protocol}://${req.get('host')}/api/v1/verify/user/${token}`;
-    const firstName = user.fullName.split(' ')[0];
+    const scoreBoardEntries = student.enrolledSubjects.map(subject => ({
+      studentId: student._id,
+      subject
+    }));
+    
+    await scoreBoardModel.insertMany(scoreBoardEntries);
+
+    
+
+    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const link = `${req.protocol}://${req.get('host')}/api/v1/verify/student/${token}`;
+    const firstName = student.fullName.split(' ')[0];
 
     const mailOptions = {
-      email: user.email,
+      email: student.email,
       subject: 'Account Verification',
       html: verify(link, firstName)
     };
 
     await send_mail(mailOptions);
-    await user.save();
+    await student.save();
 
     res.status(201).json({
-      message: 'User registered successfully',
-      data: user
+      message: 'Student registered successfully',
+      data: student,
     });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
-      message: 'Error registering user', data: error.message
+      message: 'Error registering user', 
+      error: error.message
     })
   }
 };
 
 
-exports.verifyUser = async (req, res) => {
+exports.verifyStudent = async (req, res) => {
   try {
     const { token } = req.params;
 
@@ -85,27 +86,27 @@ exports.verifyUser = async (req, res) => {
     jwt.verify(token, process.env.JWT_SECRET, async (error, payload) => {
       if (error) {
         if (error instanceof jwt.JsonWebTokenError) {
-          const { userId } = jwt.decode(token);
-          const user = await userModel.findById(userId);
+          const { studentId } = jwt.decode(token); 
+          const student = await studentModel.findById(studentId);
 
-          if (!user) {
+          if (!student) {
             return res.status(404).json({
               message: 'Account not found'
             })
           };
 
-          if (user.isVerified === true) {
+          if (student.isVerified === true) {
             return res.status(400).json({
               message: 'Account is verified already'
             })
           };
 
-          const newToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '5mins' });
-          const link = `${req.protocol}://${req.get('host')}/api/v1/verify/user/${newToken}`;
-          const firstName = user.fullName.split(' ')[0];
+          const newToken = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, { expiresIn: '5mins' });
+          const link = `${req.protocol}://${req.get('host')}/api/v1/verify/student/${newToken}`;
+          const firstName = student.fullName.split(' ')[0];
 
           const mailOptions = {
-            email: user.email,
+            email: student.email,
             subject: 'Resend: Account Verification',
             html: verify(link, firstName)
           };
@@ -116,22 +117,22 @@ exports.verifyUser = async (req, res) => {
           })
         }
       } else {
-        const user = await userModel.findById(payload.userId);
+        const student = await studentModel.findById(payload.studentId);
 
-        if (!user) {
+        if (!student) {
           return res.status(404).json({
             message: 'Account not found'
           })
         };
 
-        if (user.isVerified === true) {
+        if (student.isVerified === true) {
           return res.status(400).json({
             message: 'Account is verified already'
           })
         };
 
-        user.isVerified = true;
-        await user.save();
+        student.isVerified = true;
+        await student.save();
 
         res.status(200).json({
           message: 'Account verified successfully'
@@ -152,34 +153,34 @@ exports.verifyUser = async (req, res) => {
 };
 
 
-exports.loginUser = async (req, res) => {
+exports.loginStudent = async (req, res) => {
   try {
     const validatedData = await validate(req.body, loginSchema)
 
-    const { username, password } = validatedData;
+    const { email, password } = validatedData;
    
-    if (!username) {
+    if (!email) {
       return res.status(400).json({
-        message: 'Please enter your userName correctly'
+        message: 'Please enter your email correctly'
       })
     };
 
 
     if (!password) {
       return res.status(400).json({
-        message: 'Please your password'
+        message: 'Please enter your password correctly'
       })
     };
 
-    const user = await userModel.findOne({ username: username.toLowerCase() });
+    const student = await studentModel.findOne({ email: email.toLowerCase() });
 
-    if (!user) {
+    if (!student) {
       return res.status(400).json({
         message: 'User not found with that username'
       })
     };
 
-    const isCorrectPassword = await bcrypt.compare(password, user.password);
+    const isCorrectPassword = await bcrypt.compare(password, student.password);
 
     if (!isCorrectPassword) {
       return res.status(400).json({
@@ -187,13 +188,13 @@ exports.loginUser = async (req, res) => {
       })
     };
 
-    if (user.isVerified === false) {
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1day' });
-      const link = `${req.protocol}://${req.get('host')}/api/v1/verify/user/${token}`;
-      const firstName = user.fullName.split(' ')[0];
+    if (student.isVerified === false) {
+      const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, { expiresIn: '1day' });
+      const link = `${req.protocol}://${req.get('host')}/api/v1/verify/student/${token}`;
+      const firstName = student.fullName.split(' ')[0];
 
       const mailOptions = {
-        email: user.email,
+        email: student.email,
         subject: 'Account Verification',
         html: verify(link, firstName)
       };
@@ -203,13 +204,13 @@ exports.loginUser = async (req, res) => {
         message: 'Account is not verified, link has been sent to email address'
       })
     }
-    user.isLoggedIn = true
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1day' });
+    student.isLoggedIn = true
+    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, { expiresIn: '1day' });
 
-    await user.save()
+    await student.save()
 
     res.status(200).json({
-      message: 'Account login successfull',
+      message: 'Account login successful',
       token
     })
   } catch (error) {
@@ -226,24 +227,24 @@ exports.loginUser = async (req, res) => {
 };
 
 
-exports.forgotUserPassword = async (req, res) => {
+exports.forgotStudentPassword = async (req, res) => {
   try {
     const validatedData = await validate(req.body, forgotPasswordSchema)
     const { email } = validatedData;
-    const user = await userModel.findOne({ email: email.toLowerCase() });
+    const student = await studentModel.findOne({ email: email.toLowerCase() });
 
-    if (!user) {
+    if (!student) {
       return res.status(404).json({
         message: 'Account not found'
       })
     };
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '15mins' });
-    const link = `${req.protocol}://${req.get('host')}/api/v1/reset_password/user/${token}`; // consumed post link
-    const firstName = user.fullName.split(' ')[0];
+    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, { expiresIn: '15mins' });
+    const link = `${req.protocol}://${req.get('host')}/api/v1/reset_password/student/${token}`; // consumed post link
+    const firstName = student.fullName.split(' ')[0];
 
     const mailOptions = {
-      email: user.email,
+      email: student.email,
       subject: 'Reset Password',
       html: reset(link, firstName)
     };
@@ -261,7 +262,7 @@ exports.forgotUserPassword = async (req, res) => {
 };
 
 
-exports.resetUserPassword = async (req, res) => {
+exports.resetStudentPassword = async (req, res) => {
   try {
     const { token } = req.params;
 
@@ -271,7 +272,7 @@ exports.resetUserPassword = async (req, res) => {
       })
     };
 
-    const validatedData = await validate(req.body, resetUserPasswordSchema)
+    const validatedData = await validate(req.body, resetStudentPasswordSchema)
     const { newPassword, confirmPassword } = validatedData;
 
     if (!newPassword || !confirmPassword) {
@@ -287,11 +288,11 @@ exports.resetUserPassword = async (req, res) => {
     };
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
+    const studentId = decoded.studentId;
 
-    const user = await userModel.findById(userId);
+    const student = await studentModel.findById(studentId);
 
-    if (!user) {
+    if (!student) {
       return res.status(404).json({
         message: 'Account not found'
       })
@@ -300,8 +301,8 @@ exports.resetUserPassword = async (req, res) => {
     const saltedRound = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, saltedRound);
     
-    user.password = hashedPassword;
-    await user.save();
+    student.password = hashedPassword;
+    await student.save();
 
     res.status(200).json({
       message: 'Password changed successfully'
@@ -320,22 +321,22 @@ exports.resetUserPassword = async (req, res) => {
 };
 
 
-exports.changeUserPassword = async (req, res) => {
+exports.changeStudentPassword = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const validatedData = await validate(req.body, changeUserPasswordSchema)
+    const validatedData = await validate(req.body, changeStudentPasswordSchema)
     const { currentPassword, newPassword} = validatedData;
 
-    const user = await userModel.findById(id);
+    const student = await studentModel.findById(id);
 
-    if (!user) {
+    if (!student) {
       return res.status(404).json({
         message: 'User not found'
       })
     };
 
-    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, student.password);
 
     if (!isPasswordCorrect) {
       return res.status(400).json({
@@ -343,7 +344,7 @@ exports.changeUserPassword = async (req, res) => {
       })
     };
 
-    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    const isSamePassword = await bcrypt.compare(newPassword, student.password);
 
     if (isSamePassword) {
       return res.status(400).json({ 
@@ -353,8 +354,8 @@ exports.changeUserPassword = async (req, res) => {
 
     const saltedRound = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, saltedRound);
-    user.password = hashedPassword;
-    await user.save();
+    student.password = hashedPassword;
+    await student.save();
 
     res.status(200).json({
       message: 'Password changed successfully'
@@ -394,18 +395,18 @@ exports.changeUserPassword = async (req, res) => {
 // };
 
 
-exports.logoutUser = async (req, res) => {
+exports.logoutStudent = async (req, res) => {
   try {
-    const user = await userModel.findById(req.user.userId);
+    const student = await studentModel.findById(req.student.studentId);
 
-    if (!user) {
+    if (!student) {
       return res.status(400).json({ 
         message: "User not found" 
       });
     }
 
-    user.isLoggedIn = false;
-    await user.save();
+    student.isLoggedIn = false;
+    await student.save();
 
     res.status(200).json({ 
       message: "Logged out successfully" 
@@ -418,6 +419,54 @@ exports.logoutUser = async (req, res) => {
     });
   }
 };
+
+exports.getStudentsWithPointsAndResults = async (req, res) => {
+  try {
+    const scores = await scoreBoardModel.find()
+      .populate({
+        path: 'studentId',
+        select: 'name email enrolledSubjects' 
+      })
+      .select('studentId subject points result'); 
+
+    res.status(200).json({
+      success: true,
+      data: scores
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
+  }
+};
+
+exports.filterStudentsWithPointsAndResultsBySubject = async (req, res) => {
+  try {
+    const { subject } = req.params;
+    const scores = await scoreBoardModel.find({ subject })
+      .populate({
+        path: 'studentId',
+        select: 'name email enrolledSubjects' 
+      })
+      .select('studentId subject points result'); 
+
+    res.status(200).json({
+      success: true,
+      data: scores
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
+  } 
+}
+
+
+
 
 
 

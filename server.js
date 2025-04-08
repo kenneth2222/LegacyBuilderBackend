@@ -3,11 +3,10 @@ const cors = require("cors");
 require('dotenv').config();
 require('./config/database');
 const PORT = process.env.PORT;
-const userRouter = require('./routes/userRouter');
+// const userRouter = require('./routes/studentRouter');
 const transactionRouter = require('./routes/transactionRouter');
 const socialRouter =  require('./routes/socialRouter');
-// const roomRouter = require('./routes/roomRouter');
-// const categoryRouter = require('./routes/categoryRouter');
+const studentRouter =  require('./routes/studentRouter');
 const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
 const session = require('express-session');
 const passport = require('passport');
@@ -94,18 +93,10 @@ const swaggerDefinition = {
   const swaggerSpec = swaggerJSDoc(options);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-    
-  
-
-
-// app.use(userRouter);
-app.use('/api/v1', userRouter);
-app.use(transactionRouter);
+   
+app.use('/api/v1', studentRouter);
+app.use('/api/v1', transactionRouter);
 app.use(socialRouter);
-
-
-// app.use(roomRouter);
-// app.use(categoryRouter);
 
 
 app.listen(PORT, () => {
