@@ -1,6 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
-require('dotenv').config();
 require('./config/database');
 const PORT = process.env.PORT;
 // const userRouter = require('./routes/studentRouter');

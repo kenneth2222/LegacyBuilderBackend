@@ -29,6 +29,16 @@ enrolledSubjects: {
   ],
   default: ['Mathematics', 'English'],
 },
+image: {
+  public_id: {
+      type: String,
+      required: false
+  },
+  imageUrl: {
+      type: String,
+      required: false
+  }
+},
  isVerified: {
        type: Boolean,
        default: false,

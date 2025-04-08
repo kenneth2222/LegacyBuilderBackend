@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
+const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject } = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage } = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -693,5 +694,274 @@ studentRouter.get('/student', getStudentsWithPointsAndResults);
  */
 
 studentRouter.get('/student/:subject', filterStudentsWithPointsAndResultsBySubject);
+
+
+/**
+ * @swagger
+ * /api/v1/upload-profileImage/{studentId}:
+ *   post:
+ *     summary: Upload profile image for a student
+ *     description: Upload and compress a student's profile image, then save the image URL and public ID to the student profile.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to upload the image for
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: The profile image file to upload
+ *     responses:
+ *       200:
+ *         description: Image uploaded and student updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image uploaded and student updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     image:
+ *                       type: object
+ *                       properties:
+ *                         public_id:
+ *                           type: string
+ *                           example: "sample_public_id"
+ *                         imageUrl:
+ *                           type: string
+ *                           example: "https://res.cloudinary.com/demo/image/upload/v1615280309/sample.jpg"
+ *       400:
+ *         description: Bad request (e.g., missing student ID, no image uploaded, or invalid file type)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student ID is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Server error during image upload
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image upload failed"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+
+studentRouter.post('/upload-profileImage/:studentId', upload.single('image'), uploadImage);
+
+/**
+ * @swagger
+ * /api/v1/update-profileImage/{studentId}:
+ *   put:
+ *     summary: Update profile image for a student
+ *     description: Update and compress an existing student's profile image, then save the new image URL and public ID to the student profile.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to update the image for
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: The new profile image file to upload
+ *     responses:
+ *       200:
+ *         description: Image updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     image:
+ *                       type: object
+ *                       properties:
+ *                         public_id:
+ *                           type: string
+ *                           example: "sample_public_id"
+ *                         imageUrl:
+ *                           type: string
+ *                           example: "https://res.cloudinary.com/demo/image/upload/v1615280309/sample.jpg"
+ *       400:
+ *         description: Bad request (e.g., missing student ID, no image uploaded, or invalid file type)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student ID is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Server error during image update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image update failed"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+
+studentRouter.put('/update-profileImage/:studentId', upload.single('image'), updateImage);
+
+/**
+ * @swagger
+ * /api/v1/delete-profileImage/{studentId}:
+ *   delete:
+ *     summary: Delete profile image for a student
+ *     description: Delete a student's profile image from Cloudinary and remove the reference from the student profile.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student whose profile image will be deleted
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Image deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image deleted successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     image:
+ *                       type: object
+ *                       example: null
+ *       400:
+ *         description: Bad request (e.g., no image to delete or invalid student ID)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No image to delete"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Server error during image deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image deletion failed"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+
+studentRouter.delete('/delete-profileImage/:studentId', deleteImage);
 
 module.exports = studentRouter;
