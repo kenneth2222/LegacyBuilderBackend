@@ -538,7 +538,6 @@ exports.uploadImage = async (req, res) => {
         fit: sharp.fit.inside,  // Ensures the image fits inside the specified dimensions while maintaining aspect ratio
         withoutEnlargement: true  // Prevents enlarging small images
       })
-
         .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
         .toFile(compressedFilePath);
 
@@ -606,6 +605,9 @@ exports.updateImage = async (req, res) => {
         message: "Student ID is required",
       });
     }
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
     
     const student = await studentModel.findById(studentId);
 
@@ -615,7 +617,6 @@ exports.updateImage = async (req, res) => {
       });
     }
 
-    
 
     // Delete the previous image from Cloudinary
     if (student.image && student.image.public_id) {
@@ -630,23 +631,19 @@ exports.updateImage = async (req, res) => {
 
     // Compress the image
     await sharp(req.file.path)
-      .resize(60, 60, {
-        fit: sharp.fit.inside,
-        withoutEnlargement: true,
-      })
-      .jpeg({ quality: 70 })
-      .toFile(compressedFilePath);
+    .resize(60, 60, {
+      fit: sharp.fit.inside,
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 70 })
+    .toFile(compressedFilePath);
+
    
       const result = await cloudinary.uploader.upload(compressedFilePath, {
         folder: 'Image Folder',
         use_filename: true,
       });
     
-
-    // Delete the local file after upload
-    // fs.unlink(req.file.path, (err) => {
-    //   if (err) console.log("Error deleting local image:", err.message);
-    // });
     fs.unlink(req.file.path)
     .then(() => {
       console.log("File deleted successfully");
