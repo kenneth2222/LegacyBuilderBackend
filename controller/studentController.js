@@ -522,7 +522,7 @@ exports.uploadImage = async (req, res) => {
       message: "Image is required",
     });
   }
-
+  console.log("File path to delete:", req.file.path);
     // Define compressed file path
     const compressedFilePath = path.join(
       __dirname,
@@ -537,14 +537,19 @@ exports.uploadImage = async (req, res) => {
         .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
         .toFile(compressedFilePath);
 
-      result = await cloudinary.uploader.upload(req.file.path, {
+      result = await cloudinary.uploader.upload(compressedFilePath, {
         folder: "Image Folder",
         use_filename: true,
       });
 
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.log("Error deleting local image:", err.message);
-      });
+      // Delete the original image after upload
+      await fs.unlink(req.file.path);
+      console.log("Original image deleted successfully");
+
+      // Delete the compressed image after upload
+      await fs.unlink(compressedFilePath);
+      console.log("Compressed image deleted successfully");
+
     } catch (error) {
       console.log("Error uploading image to Cloudinary:", error.message);
       return res.status(500).json({
@@ -636,6 +641,14 @@ exports.updateImage = async (req, res) => {
     //   if (err) console.log("Error deleting local image:", err.message);
     // });
     fs.unlink(req.file.path)
+    .then(() => {
+      console.log("File deleted successfully");
+    })
+    .catch((err) => {
+      console.error("Error deleting local image:", err.message);
+    });
+
+    fs.unlink(compressedFilePath)
     .then(() => {
       console.log("File deleted successfully");
     })
