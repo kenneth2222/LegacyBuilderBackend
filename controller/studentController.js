@@ -615,24 +615,7 @@ exports.updateImage = async (req, res) => {
       });
     }
 
-    if (student.image && student.image.public_id) {
-      
-      await cloudinary.uploader.destroy(student.image.public_id);
-
-
-    if (!req.file) {
-      return res.status(400).json({
-        message: "Image is required",
-      });
-    }
-
-    const student = await studentModel.findById(studentId);
-
-    if (!student) {
-      return res.status(404).json({
-        message: "Student not found",
-      });
-    }
+    
 
     // Delete the previous image from Cloudinary
     if (student.image && student.image.public_id) {
@@ -647,9 +630,12 @@ exports.updateImage = async (req, res) => {
 
     // Compress the image
     await sharp(req.file.path)
+      .resize(60, 60, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true,
+      })
       .jpeg({ quality: 70 })
       .toFile(compressedFilePath);
-
    
       const result = await cloudinary.uploader.upload(compressedFilePath, {
         folder: 'Image Folder',
