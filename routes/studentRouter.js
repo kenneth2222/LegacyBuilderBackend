@@ -11,7 +11,7 @@ const studentRouter = require('express').Router();
 
 /**
  * @swagger
- * /student:
+ * /api/v1/student:
  *   post:
  *     summary: Register a new student
  *     description: Registers a new student with their details and subjects of study.
@@ -42,7 +42,12 @@ const studentRouter = require('express').Router();
  *                 type: string
  *                 format: password
  *                 description: Password for the student account (hashed before storing)
- *                 example: "yourpassword123"
+ *                 example: "yourPassword123*"
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Password for the student account (hashed before storing)
+ *                 example: "yourPassword123*"
  *               enrolledSubjects:
  *                 type: array
  *                 items:
@@ -132,7 +137,7 @@ studentRouter.post('/student', registerStudent);
 
 /**
  * @swagger
- * /student/login:
+ * /api/v1/student/login:
  *   post:
  *     summary: Student Login
  *     description: Authenticates a student and returns a JWT token upon successful login.
@@ -154,7 +159,7 @@ studentRouter.post('/student', registerStudent);
  *                 type: string
  *                 format: password
  *                 description: The student's password
- *                 example: "yourpassword123"
+ *                 example: "yourPassword123*"
  *     responses:
  *       200:
  *         description: Successful login
@@ -206,12 +211,12 @@ studentRouter.post('/student/login/', loginStudent);
 
 /**
  * @swagger
- * /forgot_password/student:
+ * /api/v1/forgot_password/student:
  *   post:
  *     summary: Request a password reset link
  *     description: Sends a password reset link to the student's registered email.
  *     tags:
- *       - Authentication
+ *       - Students
  *     security: [] # No Authentication Needed
  *     requestBody:
  *       required: true
@@ -263,12 +268,12 @@ studentRouter.post('/forgot_password/student', forgotStudentPassword);
 
 /**
  * @swagger
- * /reset_password/student/{token}:
+ * /api/v1/reset_password/student/{token}:
  *   post:
  *     summary: Reset a student's password
  *     description: Allows students to reset their password using a valid token.
  *     tags:
- *       - Users
+ *       - Students
  *     security: [] # No Authentication Needed
  *     parameters:
  *       - in: path
@@ -341,12 +346,12 @@ studentRouter.post('/reset_password/student/:token', resetStudentPassword);
 
 /**
  * @swagger
- * /verify/student/{token}:
+ * /api/v1/verify/student/{token}:
  *   get:
  *     summary: Verify student account
  *     description: Verifies a student's account using the provided token. If valid, the student's account is marked as verified. If expired, a new verification link is sent.
  *     tags:
- *       - Users
+ *       - Students
  *     parameters:
  *       - in: path
  *         name: token
@@ -402,12 +407,12 @@ studentRouter.get('/verify/student/:token', verifyStudent);
 
 /**
  * @swagger
- * /change/password/student/{id}:
+ * /api/v1/change/password/student/{id}:
  *   post:
  *     summary: Change student password
  *     description: Allows an authenticated student to update their password.
  *     tags:
- *       - Users
+ *       - Students
  *     security:
  *       - BearerAuth: [] # Assumes authentication is required
  *     parameters:
@@ -428,12 +433,17 @@ studentRouter.get('/verify/student/:token', verifyStudent);
  *                 type: string
  *                 format: password
  *                 description: The student's current password.
- *                 example: "OldP@ssword123"
+ *                 example: "OldP@ssword123*"
  *               newPassword:
  *                 type: string
  *                 format: password
  *                 description: The new password.
- *                 example: "NewP@ssword123"
+ *                 example: "NewP@ssword123*"
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: The new confirmed password.
+ *                 example: "NewP@ssword123*"
  *     responses:
  *       200:
  *         description: Password changed successfully.
@@ -482,12 +492,12 @@ studentRouter.post('/change/password/student/:id', changeStudentPassword);
 
 /**
  * @swagger
- * /logout:
+ * /api/v1/logout:
  *   post:
  *     summary: Logout a student
  *     description: Logs out an authenticated student by updating their login status.
  *     tags:
- *       - Users
+ *       - Students
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -527,7 +537,7 @@ studentRouter.post('/logout', authenticate, logoutStudent);
 
 /**
  * @swagger
- * /student:
+ * /api/v1/student:
  *   get:
  *     summary: Get all students with their points and results
  *     description: Retrieves a list of all students along with their enrolled subjects, points, and results for each subject.
@@ -598,7 +608,7 @@ studentRouter.get('/student', getStudentsWithPointsAndResults);
 
 /**
  * @swagger
- * /student/{subject}:
+ * /api/v1/student/{subject}:
  *   get:
  *     summary: Get students' points and results by subject
  *     description: Retrieves a list of students filtered by the specified subject, including their enrolled subjects, points, and results.

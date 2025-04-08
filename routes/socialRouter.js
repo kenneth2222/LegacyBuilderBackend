@@ -4,8 +4,6 @@ const passport = require("passport");
 const socialRouter = require('express').Router();
 
 
-
-
 /**
  * @swagger
  * /googleAuthenticate:
