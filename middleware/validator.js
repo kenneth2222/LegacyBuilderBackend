@@ -119,6 +119,8 @@ exports.resetStudentPasswordSchema = joi.object().keys({
           "any.only": "Passwords do not match",
           'any.required': 'Confirm password is required'
       })
-  });
+    });
+
+     
 
 
