@@ -534,6 +534,11 @@ exports.uploadImage = async (req, res) => {
     try {
       // Compress the image using sharp
       await sharp(req.file.path)
+      .resize(60, 60, { 
+        fit: sharp.fit.inside,  // Ensures the image fits inside the specified dimensions while maintaining aspect ratio
+        withoutEnlargement: true  // Prevents enlarging small images
+      })
+
         .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
         .toFile(compressedFilePath);
 
@@ -589,6 +594,9 @@ exports.uploadImage = async (req, res) => {
 };
 
 
+
+
+
 exports.updateImage = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -598,6 +606,19 @@ exports.updateImage = async (req, res) => {
         message: "Student ID is required",
       });
     }
+    
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    if (student.image && student.image.public_id) {
+      
+      await cloudinary.uploader.destroy(student.image.public_id);
+
 
     if (!req.file) {
       return res.status(400).json({
@@ -656,8 +677,6 @@ exports.updateImage = async (req, res) => {
       console.error("Error deleting local image:", err.message);
     });
 
-
-
     // Update student image data in the database
     student.image = {
       public_id: result.public_id,
@@ -701,6 +720,7 @@ exports.deleteImage = async (req, res) => {
     if (student.image && student.image.public_id) {
       
       await cloudinary.uploader.destroy(student.image.public_id);
+
 
       // Remove the image reference from the student document
       student.image = undefined;
