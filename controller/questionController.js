@@ -2,7 +2,11 @@ const axios = require('axios');
 
 exports.getQuestions = async (req, res) => {
   try {
+
+
     const { year, subject } = req.params;  
+
+    
 
     if (!subject) {
         return res.status(400).json({
@@ -38,6 +42,11 @@ exports.getQuestions = async (req, res) => {
     });
   }
 };
+
+
+
+
+
 
 
 
