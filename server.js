@@ -7,6 +7,7 @@ const PORT = process.env.PORT;
 const transactionRouter = require('./routes/transactionRouter');
 const socialRouter =  require('./routes/socialRouter');
 const studentRouter =  require('./routes/studentRouter');
+const questionRouter =  require('./routes/questionRouter');
 const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
 const session = require('express-session');
 const passport = require('passport');
@@ -95,6 +96,7 @@ const swaggerDefinition = {
 
    
 app.use('/api/v1', studentRouter);
+app.use('/api/v1', questionRouter);
 app.use('/api/v1', transactionRouter);
 app.use(socialRouter);
 
