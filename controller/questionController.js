@@ -24,24 +24,10 @@ exports.getQuestions = async (req, res) => {
        // Convert subjectName into an array if it's a comma-separated string
     const subjectName = subject.split(',');
 
-
-    
     const response = await axios.get(`https://questionapp-t8bu.onrender.com/questions/${year}/${subjectName}`);
     
-  
     if (response.status === 200) {
       return res.status(200).json(response.data);  
-
-
-    // Making the request to the external API
-    const response = await axios.get(`https://questionapp-t8bu.onrender.com/questions/${year}/${subjectName}`);
-    
-  
-
-    // Check if the response is successful
-    if (response.status === 200) {
-      return res.status(200).json(response.data);  // Send the data as response
-
     } else {
       throw new Error('Error fetching questions');
     }
@@ -54,10 +40,3 @@ exports.getQuestions = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
