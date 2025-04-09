@@ -3,9 +3,7 @@ const axios = require('axios');
 exports.getQuestions = async (req, res) => {
   try {
 
-
     const { year, subject } = req.params;  
-
 
     if (!subject) {
         return res.status(400).json({
@@ -35,8 +33,15 @@ exports.getQuestions = async (req, res) => {
     console.error('Error in API call:', error.message);
     return res.status(500).json({
       success: false,
-
       message: `Could not fetch questions: ${error.message}`,
     });
   }
 };
+
+
+
+
+
+
+
+
