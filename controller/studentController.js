@@ -2,6 +2,7 @@
 require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
+const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -22,11 +23,6 @@ const {
   resetStudentPasswordSchema,
 } = require("../middleware/validator");
 
-// cloudinary.config({
-//   cloud_name: process.env.CLOUD_NAME,
-//   api_key: process.env.CLOUD_API_KEY,
-//   api_secret: process.env.CLOUD_API_SECRET
-// });
 
 exports.registerStudent = async (req, res) => {
   try {
@@ -216,9 +212,10 @@ exports.loginStudent = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1day" }
       );
-      const link = `${req.protocol}://${req.get(
-        "host"
-      )}/api/v1/verify/student/${token}`;
+      // const link = `${req.protocol}://${req.get(
+      //   "host"
+      // )}/api/v1/verify/student/${token}`;
+      const link = `${baseUrl}/api/v1/verify/student/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
@@ -272,9 +269,7 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    const link = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/reset_password/student/${token}`; // consumed post link
+    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -591,10 +586,6 @@ exports.uploadImage = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 exports.updateImage = async (req, res) => {
   try {
