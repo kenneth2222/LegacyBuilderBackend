@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage } = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents } = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -963,5 +963,7 @@ studentRouter.put('/update-profileImage/:studentId', upload.single('image'), upd
  */
 
 studentRouter.delete('/delete-profileImage/:studentId', deleteImage);
+
+studentRouter.get('/students', getAllStudents);
 
 module.exports = studentRouter;
