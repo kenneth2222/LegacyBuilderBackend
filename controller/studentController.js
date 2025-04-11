@@ -120,10 +120,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          // const link = `${req.protocol}://${req.get(
-          //   "host"
-          // )}/api/v1/verify/student/${newToken}`;
-          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          const link = `${req.protocol}://${req.get(
+            "host"
+          )}/api/v1/verify/student/${newToken}`;
+          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -155,9 +155,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
+        // res.status(200).json({
+        //   message: "Account verified successfully",
+        // });
+        return res.redirect("https://legacy-builder.vercel.app/verify/${newToken}");
       }
     });
   } catch (error) {
