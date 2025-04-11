@@ -1,13 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
-require('dotenv').config();
 require('./config/database');
 const PORT = process.env.PORT;
-const userRouter = require('./routes/userRouter');
 const transactionRouter = require('./routes/transactionRouter');
 const socialRouter =  require('./routes/socialRouter');
-// const roomRouter = require('./routes/roomRouter');
-// const categoryRouter = require('./routes/categoryRouter');
+const studentRouter =  require('./routes/studentRouter');
+const questionRouter =  require('./routes/questionRouter');
 const EXPRESS_SECRET = process.env.EXPRESS_SECRET;
 const session = require('express-session');
 const passport = require('passport');
@@ -30,13 +29,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-// app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
-app.use(cors({
-  origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
-//  origin: ['http://localhost:2025'], 
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true // This allows cookies & session handling
-}));
+app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
+// app.use(cors({
+//   origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true // This allows cookies & session handling
+// }));
 
 
 const swaggerDefinition = {
@@ -94,18 +92,11 @@ const swaggerDefinition = {
   const swaggerSpec = swaggerJSDoc(options);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-    
-  
-
-
-// app.use(userRouter);
-app.use('/api/v1', userRouter);
-app.use(transactionRouter);
+   
+app.use('/api/v1', studentRouter);
+app.use('/api/v1', questionRouter);
+app.use('/api/v1', transactionRouter);
 app.use(socialRouter);
-
-
-// app.use(roomRouter);
-// app.use(categoryRouter);
 
 
 app.listen(PORT, () => {

@@ -1,7 +1,7 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const passport = require('passport');
-const userModel = require('../model/userModel');
+const studentModel = require('../model/student');
 const bcrypt = require("bcrypt");
 
 
@@ -14,22 +14,23 @@ passport.use(new GoogleStrategy({
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
-      let user = await userModel.findOne({email: profile.emails[0].value});
-      if(!user){
+      let student = await studentModel.findOne({email: profile.emails[0].value});
+      if(!student){
         const randomPassword = await bcrypt.hash(profile.id, 10);
 
-        user = new userModel({
+        student = new studentModel({
             fullName: profile.displayName,
             email: profile.emails[0].value,
             isVerified: true,  // Set to true since Google verifies emails
-            username: profile.displayName.replace(/\s+/g, '').toLowerCase(), // Auto-generate username
+            // username: profile.displayName.replace(/\s+/g, '').toLowerCase(), // Auto-generate username
             roles: "user", 
             isLoggedIn: true, 
             password: randomPassword,
+            enrolledSubjects: ['Mathematics', 'English'],
         });
-        await user.save();
+        await student.save();
       }
-      return cb(null, user);
+      return cb(null, student);
   }catch (error) {
       console.log(error.message);
       return cb(error, null);
@@ -49,22 +50,23 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, cb) => {
       try {
-        let user = await userModel.findOne({ email: profile.emails[0].value });
+        let student = await studentModel.findOne({ email: profile.emails[0].value });
 
         const randomPassword = await bcrypt.hash(profile.id, 10);
-        if (!user) {
-          user = new userModel({
+        if (!student) {
+          student = new studentModel({
             fullName: profile.displayName,
             email: profile.emails[0].value,
-            username: profile.displayName.replace(/\s+/g, "").toLowerCase(),
+            // username: profile.displayName.replace(/\s+/g, "").toLowerCase(),
             isVerified: true,
             roles: "user", 
             isLoggedIn: true, 
             password: randomPassword,
+            enrolledSubjects: ['Mathematics', 'English'],
           });
-          await user.save();
+          await student.save();
         }
-        return cb(null, user);
+        return cb(null, student);
       } catch (error) {
         console.log(error.message);
         return cb(error, null);
@@ -73,18 +75,18 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, cb) => {
+passport.serializeUser((student, cb) => {
     // console.log('User Serialised:', user);
-    cb(null, user._id);
+    cb(null, student._id);
 });
   
   passport.deserializeUser(async (id, cb) => {
     try{
-        const user = await userModel.findById(id);
-        if(!user){
-            return cb(new Error('User not found'), null);
+        const student = await studentModel.findById(id);
+        if(!student){
+            return cb(new Error('Student not found'), null);
         }
-        cb(null, user);
+        cb(null, student);
     }catch (error) {
         console.log(error.message);
         return cb(error, null);

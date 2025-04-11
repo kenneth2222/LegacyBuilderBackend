@@ -1,4 +1,6 @@
 const multer = require('multer');
+const path = require('path');
+
 //Configure the storage
 const storage = multer.diskStorage({
     // The destination where the file will be store
@@ -20,19 +22,19 @@ const fileFilter = (req, file, cb) => {
         //Return True if it mets the condition
         cb(null, true)
     } else {
-        //Throw sn Error if the wrong file tpye is passed
-        cb(new Error('Invalid file type'))
+        req.fileValidationError = 'Invalid file type. Only image files are allowed.';
+    cb(null, false);  // Reject the file, but no error is thrown
     }
 };
-//Define a limit to the file size
+//Define a limit to the file size(1024 bytes * 1024 = 1 MB)
 const fileSize = {
-    limits: 1024 * 1024 * 10
+    limits: 1024 * 1024 * 2
 };
 //Pass all the configuration of multer to the variable upload
 const upload = multer ({
     storage,
     fileFilter,
-    limits:fileSize
+    limits: fileSize
 
 })
 //Export the upload variable which holds the multer configuration

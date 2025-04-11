@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-  name: { 
+  fullName: { 
     type: String, 
     required: true 
 },
@@ -14,16 +14,60 @@ const studentSchema = new mongoose.Schema({
     type: String, 
     required: true 
 }, 
-  enrolledSubjects: [{ 
-    type: String 
-}], 
-  studySessions: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'StudySession' 
-}], // Link to study sessions
-  createdAt: { type: Date, default: Date.now },
-});
-
+enrolledSubjects: {
+  type: [String],
+  enum: ['English',
+    'Mathematics',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'Literature in English',
+    'Economics',
+    'Geography',
+    'Government',
+    'History'
+  ],
+  default: ['Mathematics', 'English'],
+},
+image: {
+  public_id: {
+      type: String,
+      required: false
+  },
+  imageUrl: {
+      type: String,
+      required: false
+  }
+},
+ isVerified: {
+       type: Boolean,
+       default: false,
+     },
+ 
+     roles: {
+       type: String,
+       enum: ["admin", "user"],
+       default: "user",
+     },
+ 
+     isLoggedIn: {
+       type: Boolean,
+       default: false,
+     },
+ 
+    studySessions: [{ 
+         type: mongoose.Schema.Types.ObjectId, 
+         ref: 'StudySession' 
+     }],
+     leadershipBoard: [{ 
+       type: mongoose.Schema.Types.ObjectId, 
+       ref: 'LeadershipBoard' 
+     }],
+ 
+     createdAt: { type: Date, default: Date.now },
+   },
+   { timestamps: true }
+ );
+ 
 const Student = mongoose.model('Student', studentSchema);
-
 module.exports = Student;
