@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require("cors");
 require('./config/database');
 const PORT = process.env.PORT;
-// const userRouter = require('./routes/studentRouter');
 const transactionRouter = require('./routes/transactionRouter');
 const socialRouter =  require('./routes/socialRouter');
 const studentRouter =  require('./routes/studentRouter');
@@ -30,13 +29,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-// app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
-app.use(cors({
-  origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
-//  origin: ['http://localhost:2025'], 
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true // This allows cookies & session handling
-}));
+app.use(cors({ origin: "*", methods: "GET,HEAD,PUT,PATCH,POST,DELETE" }));
+// app.use(cors({
+//   origin: ['http://localhost:2025', 'https://legacybuilderbackend.onrender.com'], // Allow both dev and production servers
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true // This allows cookies & session handling
+// }));
 
 
 const swaggerDefinition = {
