@@ -5,6 +5,7 @@ const scoreBoardModel = require("../model/scoreBoard");
 const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
 
 
+
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -62,9 +63,11 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const link = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/verify/student/${token}`;
+    // const link = `${req.protocol}://${req.get(
+    //   "host"
+    // )}/api/v1/verify/student/${token}`;
+    const link = `https://legacy-builder.vercel.app/verify/${token}`;
+    
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -122,10 +125,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          const link = `${req.protocol}://${req.get(
-            "host"
-          )}/api/v1/verify/student/${newToken}`;
-          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          // const link = `${req.protocol}://${req.get(
+          //   "host"
+          // )}/api/v1/verify/student/${newToken}`;
+          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -160,7 +163,7 @@ exports.verifyStudent = async (req, res) => {
         // res.status(200).json({
         //   message: "Account verified successfully",
         // });
-        return res.redirect(`https://legacy-builder.vercel.app/verify/${newToken}`);
+        return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
       }
     });
   } catch (error) {
@@ -220,7 +223,8 @@ exports.loginStudent = async (req, res) => {
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
-      const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      const link = `https://legacy-builder.vercel.app/verify/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
