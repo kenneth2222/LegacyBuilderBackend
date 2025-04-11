@@ -159,7 +159,7 @@ exports.verifyStudent = async (req, res) => {
         // res.status(200).json({
         //   message: "Account verified successfully",
         // });
-        return res.redirect("https://legacy-builder.vercel.app/verify/${newToken}");
+        return res.redirect(`https://legacy-builder.vercel.app/verify/${newToken}`);
       }
     });
   } catch (error) {
