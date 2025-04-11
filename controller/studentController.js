@@ -3,6 +3,8 @@ require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
 const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
+
+
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -120,10 +122,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          // const link = `${req.protocol}://${req.get(
-          //   "host"
-          // )}/api/v1/verify/student/${newToken}`;
-          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          const link = `${req.protocol}://${req.get(
+            "host"
+          )}/api/v1/verify/student/${newToken}`;
+          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -155,9 +157,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
+        // res.status(200).json({
+        //   message: "Account verified successfully",
+        // });
+        return res.redirect(`https://legacy-builder.vercel.app/verify/${newToken}`);
       }
     });
   } catch (error) {
@@ -213,6 +216,7 @@ exports.loginStudent = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1day" }
       );
+     
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
@@ -271,6 +275,7 @@ exports.forgotStudentPassword = async (req, res) => {
       expiresIn: "15mins",
     });
     const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -718,6 +723,22 @@ exports.deleteImage = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+//This is just for firing render and keeping it active
+exports.getAllStudents = async (req, res) => {
+  const students = await studentModel.find();
+
+  if (!students) {
+    return res.status(404).json({
+      message: "No students found",
+    });
+  }else {
+    return res.status(200).json({
+      message: "Students retrieved successfully",
+      data: students,
+    });     
+  };
 };
 
 //This is just for firing render and keeping it active
