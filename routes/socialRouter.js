@@ -30,8 +30,6 @@ const socialRouter = require('express').Router();
 
 socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-
-
 /**
  * @swagger
  * /auth/google/login:
@@ -124,13 +122,13 @@ socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope:
 socialRouter.get("/auth/google/login", passport.authenticate("google",  { failureRedirect: "/login" }), async(req, res) => {
     try {
     const token = await jwt.sign({ userId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
-    const redirectUrl = `https://legacy-builder.vercel.app/social-auth?token=${token}`;
-    return res.redirect(redirectUrl);
-    // res.status(200).json({
-    //     message: "GoogleAuth Login Successful",
-    //     data: req.user,
-    //     token
-    // });
+    // const redirectUrl = `https://legacy-builder.vercel.app/social-auth?token=${token}`;
+    // return res.redirect(redirectUrl);
+    res.status(200).json({
+        message: "GoogleAuth Login Successful",
+        data: req.user,
+        token
+    });
 } catch (error) {
     console.error(error);
     res.status(500).json({ 
@@ -271,3 +269,19 @@ socialRouter.get("/auth/facebook/callback", passport.authenticate("facebook", { 
   );
 
   module.exports = socialRouter;
+
+
+
+
+//   import axios from 'axios';
+
+// axios.get('https://legacybuilderbackend.onrender.com/auth/google/login')
+//   .then(response => {
+//     const { token, data: user } = response.data;
+//     console.log(token); // JWT Token
+//     console.log(user);  // req.user object
+//     console.log(user.fullName); // User's name
+//   })
+//   .catch(error => {
+//     console.error('Error:', error);
+//   });

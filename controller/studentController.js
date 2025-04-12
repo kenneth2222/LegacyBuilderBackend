@@ -5,6 +5,8 @@ const scoreBoardModel = require("../model/scoreBoard");
 const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
 
 
+
+
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -62,9 +64,11 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const link = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/verify/student/${token}`;
+    // const link = `${req.protocol}://${req.get(
+    //   "host"
+    // )}/api/v1/verify/student/${token}`;
+    const link = `https://legacy-builder.vercel.app/verify/${token}`;
+    
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -82,6 +86,13 @@ exports.registerStudent = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
@@ -122,10 +133,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "10mins" }
           );
-          const link = `${req.protocol}://${req.get(
-            "host"
-          )}/api/v1/verify/student/${newToken}`;
-          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          // const link = `${req.protocol}://${req.get(
+          //   "host"
+          // )}/api/v1/verify/student/${newToken}`;
+          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -157,10 +168,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
-        // res.status(200).json({
-        //   message: "Account verified successfully",
-        // });
-        return res.redirect(`https://legacy-builder.vercel.app/verify/${newToken}`);
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
       }
     });
   } catch (error) {
@@ -220,7 +231,8 @@ exports.loginStudent = async (req, res) => {
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
-      const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      const link = `https://legacy-builder.vercel.app/verify/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
@@ -274,8 +286,9 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; 
+    const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; 
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
