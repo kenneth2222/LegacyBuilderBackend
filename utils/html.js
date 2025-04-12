@@ -1,186 +1,97 @@
-exports.verify = (link, firstName) => {
+exports.verify = (link) => {
+    const bg = 'https://res.cloudinary.com/dgohzrpnt/image/upload/v1744479710/Frame_2147224560_2_hx3csi.png';
+    const social = 'https://res.cloudinary.com/dgohzrpnt/image/upload/v1744478499/Group_7757_qb8rlb.png';
+  
     return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>email verification</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333333;
-                    background-color: #2c2c2c; /* Dark background */
-                    margin: 0;
-                    padding: 0;
-                }
-                .container {
-                    width: 80%;
-                    margin: 20px auto;
-                    padding: 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 10px;
-                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                    background-color: #f4f4f4; /* Light grey background */
-                }
-                .header {
-                    background: #333333;
-                    padding: 20px;
-                    text-align: center;
-                    border-bottom: 1px solid #ddd;
-                    color: #ffffff;
-                    border-radius: 10px 10px 0 0;
-                }
-                .content {
-                    padding: 20px;
-                    color: #333333;
-                }
-                .button-container {
-                    text-align: center;
-                    margin: 20px 0;
-                }
-                .button {
-                    display: inline-block;
-                    background-color: #28a745; /* Green background */
-                    color: #ffffff;
-                    padding: 15px 30px;
-                    font-size: 18px;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    transition: background-color 0.3s ease;
-                }
-                .button:hover {
-                    background-color: #218838;
-                }
-                .footer {
-                    background: #333333;
-                    padding: 10px;
-                    text-align: center;
-                    border-top: 1px solid #ddd;
-                    font-size: 0.9em;
-                    color: #cccccc;
-                    border-radius: 0 0 10px 10px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Account Verification</h1>
-                </div>
-                <div class="content">
-                    <p>Hello ${firstName},</p>
-                    <p>Thank you for signing up to Legacy Builder. We are excited to have you on board.</p>
-                    <p>Please click the button below to verify your account to get started:</p>
-                    <div class="button-container">
-                        <a href="${link}" class="button">Verify My Account</a>
-                    </div>
-                    <p>If you did not sign up on our platform, kindly ignore this email.</p>
-                    <p>Best regards.</p>
-                </div>
-                <div class="footer">
-                    <p>&copy; ${new Date().getFullYear()} . All rights reserved.</p>
-                </div>  
-            </div>
-        </body>
-        </html>
-        
-
-  `
-};
-
-
-exports.reset = (link, firstName) => {
-    return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Reset Password</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333333;
-                    background-color: #2c2c2c; /* Dark background */
-                    margin: 0;
-                    padding: 0;
-                }
-                .container {
-                    width: 80%;
-                    margin: 20px auto;
-                    padding: 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 10px;
-                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                    background-color: #f4f4f4; /* Light grey background */
-                }
-                .header {
-                    background: #333333;
-                    padding: 20px;
-                    text-align: center;
-                    border-bottom: 1px solid #ddd;
-                    color: #ffffff;
-                    border-radius: 10px 10px 0 0;
-                }
-                .content {
-                    padding: 20px;
-                    color: #333333;
-                }
-                .button-container {
-                    text-align: center;
-                    margin: 20px 0;
-                }
-                .button {
-                    display: inline-block;
-                    background-color: #28a745; /* Green background */
-                    color: #ffffff;
-                    padding: 15px 30px;
-                    font-size: 18px;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    transition: background-color 0.3s ease;
-                }
-                .button:hover {
-                    background-color: #218838;
-                }
-                .footer {
-                    background: #333333;
-                    padding: 10px;
-                    text-align: center;
-                    border-top: 1px solid #ddd;
-                    font-size: 0.9em;
-                    color: #cccccc;
-                    border-radius: 0 0 10px 10px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Password Reset</h1>
-                </div>
-                <div class="content">
-                    <p>Hello ${firstName},</p>
-                    <p>Here is a link to reset your password.</p>
-                    <p>Please click the button below to reset your password:</p>
-                    <div class="button-container">
-                        <a href="${link}" class="button">Reset My Password</a>
-                    </div>
-                    <p>If you did not request for password reset, kindly ignore this email.</p>
-                    <p>Best regards.</p>
-                </div>
-                <div class="footer">
-                    <p>&copy; ${new Date().getFullYear()} . All rights reserved.</p>
-                </div>  
-            </div>
-        </body>
-        </html>
-        
-
-  `
-}
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Verify Email</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+          }
+  
+          @media only screen and (max-width: 600px) {
+            .container {
+              width: 90% !important;
+            }
+  
+            .button {
+              width: 100% !important;
+              padding: 12px 0 !important;
+              font-size: 15px !important;
+            }
+          }
+  
+          @media (prefers-color-scheme: dark) {
+            body {
+              background-color: #1a1a1a !important;
+            }
+  
+            .content-box {
+              background-color: #ffffff !important;
+              color: #000435 !important;
+            }
+  
+            .content-box h2,
+            .content-box p {
+              color: #000435 !important;
+            }
+  
+            .footer-box {
+              background-color: #333333 !important;
+            }
+  
+            .footer-box p {
+              color: #cccccc !important;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0" style="height:100vh; background-image:url('${bg}'); background-size:cover; background-repeat:no-repeat; background-position:center; font-family: Montserrat, Arial, sans-serif;">
+          <tr>
+            <td align="center" valign="middle">
+              <table class="container" width="400" cellpadding="0" cellspacing="0" border="0" style="width:400px; max-width:90%; margin:auto;">
+                <!-- Content Box -->
+                <tr>
+                  <td class="content-box" style="background-color:#ffffff; border-radius:8px 8px 0 0; padding:20px 25px 15px; text-align:center; box-shadow:0 0 5px rgba(0, 0, 0, 0.1); margin-top: 25px;">
+                    <h2 style="font-size:20px; color:#000435; margin-bottom:12px;">
+                      Please verify your <span style="color:#2F80ED;">email address</span> To access all<br>features
+                    </h2>
+                    <p style="font-size:13px; color:#808080; line-height:1.5; margin-bottom:16px;">
+                      Thank you for joining Legacy Builder. Before we can get started, we need to verify your email address. This
+                      ensures that you receive important updates and communications from us.<br><br>
+                      To complete your account setup, please click the verification button below:
+                    </p>
+                    <a href="${link}" style="display:inline-block; background-color:#000435; color:#ffffff; text-decoration:none; padding:10px 20px; border-radius:5px; font-weight:bold; font-size:14px;">
+                      Verify My Account
+                    </a>
+                  </td>
+                </tr>
+  
+                <!-- Footer Box -->
+                <tr>
+                  <td class="footer-box" style="background-color:#C1DBEA; border-radius:0 0 8px 8px; text-align:center; padding:12px 20px;">
+                    <p style="font-size:13px; color:#5B5B5B; margin-bottom:6px;">
+                      Connect with us #LegacyBuilder
+                    </p>
+                    <img src="${social}" alt="social media icons" style="width:100px; margin-bottom:8px;" />
+                    <p style="font-size:12px; color:#98A2B3;">
+                      &copy;2025 Legacy Builder. All Rights Reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+    `;
+  };

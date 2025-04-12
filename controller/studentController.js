@@ -112,7 +112,7 @@ exports.verifyStudent = async (req, res) => {
           }
 
           if (student.isVerified === true) {
-            return res.status(400).json({
+            return res.status(200).json({
               message: "Account is verified already",
             });
           }
@@ -120,7 +120,7 @@ exports.verifyStudent = async (req, res) => {
           const newToken = jwt.sign(
             { studentId: student._id },
             process.env.JWT_SECRET,
-            { expiresIn: "5mins" }
+            { expiresIn: "10mins" }
           );
           const link = `${req.protocol}://${req.get(
             "host"
@@ -206,7 +206,7 @@ exports.loginStudent = async (req, res) => {
 
     if (!isCorrectPassword) {
       return res.status(400).json({
-        message: "Incorrect password",
+        message: "invalid credentials",
       });
     }
 
@@ -291,7 +291,7 @@ exports.forgotStudentPassword = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
-      message: "Forgot password failed",
+      message: "invalid credentials",
       data: error.message,
     });
   }
@@ -377,7 +377,7 @@ exports.changeStudentPassword = async (req, res) => {
 
     if (!isPasswordCorrect) {
       return res.status(400).json({
-        message: "Incorrect password",
+        message: "invalid credentials",
       });
     }
 
