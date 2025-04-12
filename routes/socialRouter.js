@@ -269,3 +269,19 @@ socialRouter.get("/auth/facebook/callback", passport.authenticate("facebook", { 
   );
 
   module.exports = socialRouter;
+
+
+
+
+//   import axios from 'axios';
+
+// axios.get('https://legacybuilderbackend.onrender.com/auth/google/login')
+//   .then(response => {
+//     const { token, data: user } = response.data;
+//     console.log(token); // JWT Token
+//     console.log(user);  // req.user object
+//     console.log(user.fullName); // User's name
+//   })
+//   .catch(error => {
+//     console.error('Error:', error);
+//   });
