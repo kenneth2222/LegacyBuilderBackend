@@ -97,6 +97,17 @@ exports.getQuestions = async (req, res) => {
 };
 
 
+// exports.getMockQuestions = async (req, res) => {
+//   try {
+//     const {subject} = req.params;
+
+//     if (!subject) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Subject name is required',
+//       });
+//     }
+
 
 
 

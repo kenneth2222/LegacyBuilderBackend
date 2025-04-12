@@ -6,7 +6,8 @@ exports.validate = async (data, schema) => {
         return validatedData;
         
     } catch (error) {
-        throw new Error(error.details[0].message.replace(/"/g,""));
+        throw error;
+        // throw new Error(error.details[0].message.replace(/"/g,""));
         
     }
     
