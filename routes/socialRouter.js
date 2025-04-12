@@ -30,8 +30,6 @@ const socialRouter = require('express').Router();
 
 socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-
-
 /**
  * @swagger
  * /auth/google/login:
