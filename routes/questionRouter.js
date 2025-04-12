@@ -1,5 +1,5 @@
 const questionRouter = require("express").Router();
-const {getQuestions} = require("../controller/questionController");
+const {getQuestions, getMockQuestions} = require("../controller/questionController");
 
 
 /**
@@ -78,6 +78,94 @@ const {getQuestions} = require("../controller/questionController");
  */
 
 questionRouter.get('/fetch-questions/:year/:subject', getQuestions);
+
+/**
+ * @swagger
+ * /api/v1/mock-questions/{subject}:
+ *   get:
+ *     summary: Fetch mock questions for a subject
+ *     tags: [Questions]
+ *     description: >
+ *       Retrieves a set of mock questions for a specific subject.
+ *       It randomly selects up to 5 available years (if fewer than 5, it uses all available years),
+ *       and fetches 10 questions from each year to make up a total of 50 questions.
+ *       If there is only one year available, it fetches 50 questions from that year.
+ *     parameters:
+ *       - in: path
+ *         name: subject
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The subject name (e.g., Biology).
+ *     responses:
+ *       200:
+ *         description: Mock questions retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       question:
+ *                         type: string
+ *                         example: "What is photosynthesis?"
+ *                       options:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         example: ["Option A", "Option B", "Option C", "Option D"]
+ *                       answer:
+ *                         type: string
+ *                         example: "Option C"
+ *       400:
+ *         description: Bad request, missing parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Subject name is required
+ *       404:
+ *         description: No available years found for the subject
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: No available years found for this subject
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+questionRouter.get('/mock-questions/:subject', getMockQuestions);
 
 module.exports = questionRouter
 
