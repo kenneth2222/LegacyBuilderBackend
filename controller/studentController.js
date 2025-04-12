@@ -86,6 +86,13 @@ exports.registerStudent = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
