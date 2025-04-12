@@ -279,8 +279,9 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; 
+    const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; 
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
