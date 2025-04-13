@@ -76,7 +76,7 @@ exports.getQuestions = async (req, res) => {
         return {
           question: questionPart.trim(),
           options: options,
-          answer: options[2] || "Option not provided" // you can improve this!
+          answer: options[2] || "Option not provided" 
         };
       });
 
@@ -97,17 +97,6 @@ exports.getQuestions = async (req, res) => {
 };
 
 
-// exports.getMockQuestions = async (req, res) => {
-//   try {
-//     const {subject} = req.params;
-
-//     if (!subject) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Subject name is required',
-//       });
-//     }
-
 
 exports.getMockQuestions = async (req, res) => {
   try {
@@ -125,7 +114,7 @@ exports.getMockQuestions = async (req, res) => {
 
     let availableYears = [];
 
-    // Step 1: Check which years have questions
+    
     for (const year of possibleYears) {
       try {
         const response = await axios.get(`https://questionapp-t8bu.onrender.com/questions/${year}/${subjectName}`);
@@ -176,10 +165,10 @@ exports.getMockQuestions = async (req, res) => {
       allQuestions.push(...selectedQuestions);
     }
 
-    // Shuffle the questions before returning the response
+    
     allQuestions = allQuestions.sort(() => 0.5 - Math.random());
 
-    // If total questions exceed 50, trim
+    
     if (allQuestions.length > 50) {
       allQuestions = allQuestions.slice(0, 50);
     }

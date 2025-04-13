@@ -63,6 +63,12 @@ image: {
        type: mongoose.Schema.Types.ObjectId, 
        ref: 'LeadershipBoard' 
      }],
+
+     plan: {
+      type: String,
+      enum: ["Freemium", "Premium", "Lifetime Access Model"],
+      default: "Freemium",
+    },
  
      createdAt: { type: Date, default: Date.now },
    },

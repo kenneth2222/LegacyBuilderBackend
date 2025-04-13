@@ -3,10 +3,6 @@ require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
 const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
-
-
-
-
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -93,6 +89,13 @@ exports.registerStudent = async (req, res) => {
       });
     }
 
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
@@ -168,6 +171,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
         res.status(200).json({
           message: "Account verified successfully",
         });
@@ -738,21 +745,7 @@ exports.deleteImage = async (req, res) => {
   }
 };
 
-//This is just for firing render and keeping it active
-exports.getAllStudents = async (req, res) => {
-  const students = await studentModel.find();
 
-  if (!students) {
-    return res.status(404).json({
-      message: "No students found",
-    });
-  }else {
-    return res.status(200).json({
-      message: "Students retrieved successfully",
-      data: students,
-    });     
-  };
-};
 
 //This is just for firing render and keeping it active
 exports.getAllStudents = async (req, res) => {
@@ -769,3 +762,142 @@ exports.getAllStudents = async (req, res) => {
     });     
   };
 };
+
+exports.addSubject = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject } = req.body; 
+
+    if (!studentId) {
+      return res.status(400).json({ 
+        message: "Student ID is required" 
+      });
+    }
+
+    if (!subject) {
+      return res.status(400).json({ 
+        message: "Subject is required" 
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ 
+        message: "Student not found" 
+      });
+    }
+
+    if(student.plan === "Freemium" && student.enrolledSubjects.length >= 4) {
+      return res.status(400).json({ 
+        message: "Upgrade Plan to add more subjects" 
+      });
+    }
+
+    const allowedSubjects = [
+      'English',
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Literature in English',
+      'Economics',
+      'Geography',
+      'Government',
+      'History'
+    ];
+
+    if (!allowedSubjects.includes(subject)) {
+      return res.status(400).json({ 
+        message: "Invalid subject provided" 
+      });
+    }
+
+    // Check if subject already exists
+    if (student.enrolledSubjects.includes(subject)) {
+      return res.status(400).json({ 
+        message: "Subject already enrolled" 
+      });
+    }
+
+    // Add subject
+    student.enrolledSubjects.push(subject);
+    await student.save();
+
+    return res.status(200).json({
+      message: "Subject added successfully",
+      data: student,
+    });
+
+  } catch (error) {
+    console.error("Error adding subject:", error);
+    return res.status(500).json({
+      message: "Subject addition failed",
+      error: error.message,
+    });
+  }
+};
+
+exports.removeSubject = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      });
+    }
+
+    if (!subject) {
+      return res.status(400).json({
+        message: "Subject is required",
+      });
+    }
+
+    if(subject === "Mathematics" || subject === "English") {
+      return res.status(400).json({
+        message: `You cannot remove ${subject} from enrolled subjects`,
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    if(student.plan === "Freemium") {
+      return res.status(400).json({ 
+        message: "Upgrade Plan to remove subjects" 
+      });
+    }
+
+    const index = student.enrolledSubjects.indexOf(subject);
+
+    if (index === -1) {
+      return res.status(400).json({
+        message: "Subject not found in enrolled subjects",
+      });
+    }
+
+    student.enrolledSubjects.splice(index, 1);
+    await student.save();
+
+    return res.status(200).json({
+      message: "Subject removed successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.error("Error removing subject:", error);
+    return res.status(500).json({
+      message: "Subject removal failed",
+      error: error.message,
+    });
+  }
+};
+
+
+   
