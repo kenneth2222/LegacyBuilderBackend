@@ -96,6 +96,13 @@ exports.registerStudent = async (req, res) => {
       });
     }
 
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
@@ -171,6 +178,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
         res.status(200).json({
           message: "Account verified successfully",
         });
@@ -262,6 +273,7 @@ exports.loginStudent = async (req, res) => {
 
     res.status(200).json({
       message: "Account login successful",
+      data: student,
       data: student,
       token,
     });
@@ -746,8 +758,6 @@ exports.deleteImage = async (req, res) => {
   }
 };
 
-
-
 //This is just for firing render and keeping it active
 exports.getAllStudents = async (req, res) => {
   const students = await studentModel.find();
@@ -900,7 +910,6 @@ exports.removeSubject = async (req, res) => {
   }
 };
 
-
 exports.myRating = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -971,6 +980,3 @@ exports.myRating = async (req, res) => {
     });
   }
 };
-
-
-   
