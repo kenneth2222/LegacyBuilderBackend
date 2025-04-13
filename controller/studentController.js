@@ -901,4 +901,76 @@ exports.removeSubject = async (req, res) => {
 };
 
 
+exports.myRating = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject, performance, duration, completed } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({ 
+        message: "Student ID is required" 
+      });
+    }
+
+    if (subject == null || performance == null || duration == null || completed == null) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ 
+        message: "Student not found" 
+      });
+    }
+
+    const allowedSubjects = [
+      'English',
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Literature in English',
+      'Economics',
+      'Geography',
+      'Government',
+      'History'
+    ];
+
+    const existingRatingIndex = student.myRating.findIndex((rating) => rating.subject === subject);
+
+    if (existingRatingIndex !== -1) {
+      student.myRating[existingRatingIndex].performance = performance;
+      student.myRating[existingRatingIndex].duration = duration;
+      student.myRating[existingRatingIndex].completed = completed;
+    } else {
+      const ratingData = {
+        subject,
+        performance,
+        duration,
+        completed: completed,
+      };
+
+      student.myRating.push(ratingData);
+    }
+
+    await student.save();
+
+    return res.status(200).json({
+      message: "Student rating updated successfully",
+      data: student,
+    });
+
+  } catch (error) {
+    console.error("Error updating student rating:", error);
+    return res.status(500).json({
+      message: "Failed to update student rating",
+      error: error.message,
+    });
+  }
+};
+
+
    
