@@ -734,21 +734,7 @@ exports.deleteImage = async (req, res) => {
   }
 };
 
-//This is just for firing render and keeping it active
-exports.getAllStudents = async (req, res) => {
-  const students = await studentModel.find();
 
-  if (!students) {
-    return res.status(404).json({
-      message: "No students found",
-    });
-  }else {
-    return res.status(200).json({
-      message: "Students retrieved successfully",
-      data: students,
-    });     
-  };
-};
 
 //This is just for firing render and keeping it active
 exports.getAllStudents = async (req, res) => {
