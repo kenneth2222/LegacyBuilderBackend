@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject } = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating} = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -1131,6 +1131,120 @@ studentRouter.post('/addSubject/:studentId', addSubject);
  */
 
 studentRouter.put('/removeSubject/:studentId', removeSubject);
+
+/**
+ * @swagger
+ * /api/v1/myRating/{studentId}:
+ *   put:
+ *     summary: Update a student's rating for a subject
+ *     description: Updates the rating of a student based on their performance in a specific subject, including score, duration, and completion status.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student whose rating will be updated
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subject:
+ *                 type: string
+ *                 example: "Biology"
+ *               performance:
+ *                 type: integer
+ *                 example: 80
+ *               duration:
+ *                 type: integer
+ *                 example: 120
+ *               completed:
+ *                 type: string
+ *                 enum:
+ *                   - "yes"
+ *                   - "no"
+ *                 example: "yes"
+ *     responses:
+ *       200:
+ *         description: Student rating updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student rating updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     myRating:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           subject:
+ *                             type: string
+ *                             example: "Biology"
+ *                           performance:
+ *                             type: number
+ *                             example: 80
+ *                           duration:
+ *                             type: number
+ *                             example: 120
+ *                           completed:
+ *                             type: string
+ *                             example: "yes"
+ *       400:
+ *         description: Bad request (e.g., missing studentId, subject, or invalid values)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "All fields are required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update student rating"
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error details"
+ */
+
+studentRouter.put('/myRating/:studentId', myRating);
 
 
 //This is just to keep the render active

@@ -69,6 +69,37 @@ image: {
       enum: ["Freemium", "Premium", "Lifetime Access Model"],
       default: "Freemium",
     },
+
+    myRating: [{
+      subject: {
+        type: String,
+        enum: [
+          'English',
+          'Mathematics',
+          'Physics',
+          'Chemistry',
+          'Biology',
+          'Literature in English',
+          'Economics',
+          'Geography',
+          'Government',
+          'History'
+        ],
+      },
+      performance: {
+        type: Number,
+        min: 0,
+        max: 100,
+      },
+      duration: {
+        type: Number,
+      },
+      completed: {
+        type: String,
+       enum: ["yes", "no"],
+       default: "no",
+      }
+    }],
  
      createdAt: { type: Date, default: Date.now },
    },
