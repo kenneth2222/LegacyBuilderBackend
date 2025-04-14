@@ -1169,6 +1169,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                   - "Geography"
  *                   - "Government"
  *                   - "History"
+ *                 description: The subject for which the rating is being updated
  *               performance:
  *                 type: number
  *                 example: 85
@@ -1364,6 +1365,10 @@ studentRouter.put('/myRating/:studentId', myRating);
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
+<<<<<<< HEAD
+=======
+studentRouter.post('/studentUpdate/:studentId', updateStudent)
+>>>>>>> 31ca2cd1481645c1469cd151522976a8ae812e32
 
 /**
  * @swagger
