@@ -1169,6 +1169,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                   - "Geography"
  *                   - "Government"
  *                   - "History"
+ *                 description: The subject for which the rating is being updated
  *               performance:
  *                 type: number
  *                 example: 85
@@ -1364,7 +1365,7 @@ studentRouter.put('/myRating/:studentId', myRating);
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
-studentRouter.post('/student/update',updateStudent)
+studentRouter.post('/studentUpdate/:studentId', updateStudent)
 
 
 //This is just to keep the render active
