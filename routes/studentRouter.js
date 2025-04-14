@@ -1367,7 +1367,7 @@ studentRouter.get('/studentInfo/:studentId', getStudentById);
 
 /**
  * @swagger
- * /api/v1/student/{studentId}:
+ * /api/v1/student/update:
  *   put:
  *     summary: Update a student's information
  *     description: Updates an existing student's full name using their student ID.
