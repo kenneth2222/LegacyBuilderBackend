@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents } = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating, getStudentById} = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -964,6 +964,407 @@ studentRouter.put('/update-profileImage/:studentId', upload.single('image'), upd
 
 studentRouter.delete('/delete-profileImage/:studentId', deleteImage);
 
+/**
+ * @swagger
+ * /api/v1/addSubject/{studentId}:
+ *   post:
+ *     summary: Add a subject to a student's enrolled subjects
+ *     description: Add a single subject to the list of subjects a student is enrolled in.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to add the subject to
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subject:
+ *                 type: string
+ *                 example: "Mathematics"
+ *     responses:
+ *       200:
+ *         description: Subject added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Subject added successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     enrolledSubjects:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["English", "Mathematics"]
+ *       400:
+ *         description: Bad request (e.g., missing studentId or subject, or invalid subject)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Subject is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ */
+
+studentRouter.post('/addSubject/:studentId', addSubject);
+
+
+/**
+ * @swagger
+ * /api/v1/removeSubject/{studentId}:
+ *   put:
+ *     summary: Remove a subject from a student's enrolled subjects
+ *     description: Remove a specific subject from the list of a student's enrolled subjects, except core subjects like Mathematics or English.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student whose subject will be removed
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subject:
+ *                 type: string
+ *                 example: "Literature in English"
+ *     responses:
+ *       200:
+ *         description: Subject removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Subject removed successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     enrolledSubjects:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["English", "Mathematics"]
+ *       400:
+ *         description: Bad request (e.g., missing studentId, subject, or invalid operation)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Subject not found in enrolled subjects"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Subject removal failed"
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error details"
+ */
+
+studentRouter.put('/removeSubject/:studentId', removeSubject);
+
+/**
+ * @swagger
+ * /api/v1/myRating/{studentId}:
+ *   put:
+ *     summary: Update a student's rating for a subject
+ *     description: Allows the student to update their rating for a specific subject, including performance, duration, and whether the subject is completed or not.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student whose rating will be updated
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subject:
+ *                 type: string
+ *                 example: "Mathematics"
+ *                 enum:
+ *                   - "English"
+ *                   - "Mathematics"
+ *                   - "Physics"
+ *                   - "Chemistry"
+ *                   - "Biology"
+ *                   - "Literature in English"
+ *                   - "Economics"
+ *                   - "Geography"
+ *                   - "Government"
+ *                   - "History"
+ *               performance:
+ *                 type: number
+ *                 example: 85
+ *                 description: The student's performance rating for the subject (0-100)
+ *               duration:
+ *                 type: number
+ *                 example: 120
+ *                 description: The duration of study or time spent on the subject in minutes
+ *               completed:
+ *                 type: string
+ *                 example: "yes"
+ *                 enum:
+ *                   - "yes"
+ *                   - "no"
+ *                 description: Whether the student has completed the subject (yes or no)
+ *     responses:
+ *       200:
+ *         description: Student rating updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student rating updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     myRating:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           subject:
+ *                             type: string
+ *                             example: "Mathematics"
+ *                           performance:
+ *                             type: number
+ *                             example: 85
+ *                           duration:
+ *                             type: number
+ *                             example: 120
+ *                           completed:
+ *                             type: string
+ *                             example: "yes"
+ *                     totalRating:
+ *                       type: number
+ *                       example: 85
+ *       400:
+ *         description: Bad request (e.g., missing studentId, subject, performance, or invalid operation)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "All fields are required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update student rating"
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error details"
+ */
+
+studentRouter.put('/myRating/:studentId', myRating);
+
+
+/**
+ * @swagger
+ * /api/v1/studentInfo/{studentId}:
+ *   get:
+ *     summary: Retrieve student details by student ID
+ *     description: Fetch a student's details using their unique student ID.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to retrieve
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student retrieved successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     enrolledSubjects:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["English", "Mathematics"]
+ *                     myRating:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           subject:
+ *                             type: string
+ *                             example: "Mathematics"
+ *                           performance:
+ *                             type: number
+ *                             example: 85
+ *                           duration:
+ *                             type: number
+ *                             example: 120
+ *                           completed:
+ *                             type: string
+ *                             example: "yes"
+ *                     totalRating:
+ *                       type: number
+ *                       example: 85
+ *       400:
+ *         description: Bad request (e.g., missing studentId)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student ID is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to retrieve student"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+studentRouter.get('/studentInfo/:studentId', getStudentById);
+
+
+//This is just to keep the render active
 studentRouter.get('/students', getAllStudents);
 
 module.exports = studentRouter;

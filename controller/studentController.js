@@ -3,8 +3,6 @@ require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
 const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
-
-
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -82,6 +80,34 @@ exports.registerStudent = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
@@ -157,10 +183,22 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
-        // res.status(200).json({
-        //   message: "Account verified successfully",
-        // });
-        return res.redirect(`https://legacy-builder.vercel.app/verify/${newToken}`);
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
       }
     });
   } catch (error) {
@@ -243,6 +281,7 @@ exports.loginStudent = async (req, res) => {
 
     res.status(200).json({
       message: "Account login successful",
+      data: student,
       token,
     });
   } catch (error) {
@@ -741,18 +780,235 @@ exports.getAllStudents = async (req, res) => {
   };
 };
 
-//This is just for firing render and keeping it active
-exports.getAllStudents = async (req, res) => {
-  const students = await studentModel.find();
+exports.addSubject = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject } = req.body; 
 
-  if (!students) {
-    return res.status(404).json({
-      message: "No students found",
-    });
-  }else {
+    if (!studentId) {
+      return res.status(400).json({ 
+        message: "Student ID is required" 
+      });
+    }
+
+    if (!subject) {
+      return res.status(400).json({ 
+        message: "Subject is required" 
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ 
+        message: "Student not found" 
+      });
+    }
+
+    if(student.plan === "Freemium" && student.enrolledSubjects.length >= 4) {
+      return res.status(400).json({ 
+        message: "Upgrade Plan to add more subjects" 
+      });
+    }
+
+    const allowedSubjects = [
+      'English',
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Literature in English',
+      'Economics',
+      'Geography',
+      'Government',
+      'History'
+    ];
+
+    if (!allowedSubjects.includes(subject)) {
+      return res.status(400).json({ 
+        message: "Invalid subject provided" 
+      });
+    }
+
+    // Check if subject already exists
+    if (student.enrolledSubjects.includes(subject)) {
+      return res.status(400).json({ 
+        message: "Subject already enrolled" 
+      });
+    }
+
+    // Add subject
+    student.enrolledSubjects.push(subject);
+    await student.save();
+
     return res.status(200).json({
-      message: "Students retrieved successfully",
-      data: students,
-    });     
-  };
+      message: "Subject added successfully",
+      data: student,
+    });
+
+  } catch (error) {
+    console.error("Error adding subject:", error);
+    return res.status(500).json({
+      message: "Subject addition failed",
+      error: error.message,
+    });
+  }
+};
+
+exports.removeSubject = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      });
+    }
+
+    if (!subject) {
+      return res.status(400).json({
+        message: "Subject is required",
+      });
+    }
+
+    if(subject === "Mathematics" || subject === "English") {
+      return res.status(400).json({
+        message: `You cannot remove ${subject} from enrolled subjects`,
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    if(student.plan === "Freemium") {
+      return res.status(400).json({ 
+        message: "Upgrade Plan to remove subjects" 
+      });
+    }
+
+    const index = student.enrolledSubjects.indexOf(subject);
+
+    if (index === -1) {
+      return res.status(400).json({
+        message: "Subject not found in enrolled subjects",
+      });
+    }
+
+    student.enrolledSubjects.splice(index, 1);
+    await student.save();
+
+    return res.status(200).json({
+      message: "Subject removed successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.error("Error removing subject:", error);
+    return res.status(500).json({
+      message: "Subject removal failed",
+      error: error.message,
+    });
+  }
+};
+
+exports.myRating = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { subject, performance, duration, completed } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({ 
+        message: "Student ID is required" 
+      });
+    }
+
+    if (subject == null || performance == null || duration == null || completed == null) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ 
+        message: "Student not found" 
+      });
+    }
+
+    //This is to get the index position if the subject exist in the array
+    const existingRatingIndex = student.myRating.findIndex((item) => item.subject === subject);
+
+    //-1 means that it exist and it then updates it
+    if (existingRatingIndex !== -1) {
+      student.myRating[existingRatingIndex].performance = performance;
+      student.myRating[existingRatingIndex].duration = duration;
+      student.myRating[existingRatingIndex].completed = completed;
+    } else {
+      const ratingData = {
+        subject,
+        performance,
+        duration,
+        completed: completed,
+      };
+
+      student.myRating.push(ratingData);
+    }
+
+    if (student.myRating.length > 0) {
+      const totalPerformance = student.myRating.reduce((acc, item) => acc + item.performance, 0);
+      const averageRating = totalPerformance / student.myRating.length;
+      student.totalRating = averageRating;
+    }
+
+    await student.save();
+
+    return res.status(200).json({
+      message: "Student rating updated successfully",
+      data: student,
+    });
+
+  } catch (error) {
+    console.error("Error updating student rating:", error);
+    return res.status(500).json({
+      message: "Failed to update student rating",
+      error: error.message,
+    });
+  }
+};
+
+
+exports.getStudentById = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+    return res.status(200).json({
+      message: "Student retrieved successfully",
+      data: student,
+    });  
+  } catch (error) {
+    console.error("Error retrieving student:", error);
+    return res.status(500).json({
+      message: "Failed to retrieve student",
+      error: error.message,
+    });
+  }  
 };
