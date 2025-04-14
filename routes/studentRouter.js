@@ -1364,6 +1364,8 @@ studentRouter.put('/myRating/:studentId', myRating);
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
+studentRouter.post('/student/update',updateStudent)
+
 
 
 /**
