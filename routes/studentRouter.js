@@ -1367,7 +1367,7 @@ studentRouter.get('/studentInfo/:studentId', getStudentById);
 
 /**
  * @swagger
- * /api/v1/student/update:
+ * /api/v1/studentupdate/{studentId}:
  *   put:
  *     summary: Update a student's information
  *     description: Updates an existing student's full name using their student ID.
@@ -1449,8 +1449,7 @@ studentRouter.get('/studentInfo/:studentId', getStudentById);
  *                   example: "Error updating student"
  */
 
-studentRouter.post('/student/update',updateStudent)
-
+studentRouter.post('/studentUpdate/:studentId', updateStudent)
 
 //This is just to keep the render active
 studentRouter.get('/students', getAllStudents);
