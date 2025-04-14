@@ -21,6 +21,7 @@ const {
   forgotPasswordSchema,
   changeStudentPasswordSchema,
   resetStudentPasswordSchema,
+  updateStudentSchema,
 } = require("../middleware/validator");
 
 
@@ -1011,4 +1012,34 @@ exports.getStudentById = async (req, res) => {
       error: error.message,
     });
   }  
+};
+
+exports.updateStudent = async (req, res) => {
+  try {
+    const validatedData = await validate(req.body,updateStudentSchema);
+    const { studentId} = validatedData;
+    const { fullName} = validatedData;
+    const student = await studentModel.findById(studentId)
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      })
+    }
+    if (!fullName) {
+      return res.status(400).json({
+        message: "Full name is required",
+      })
+    }
+    student.fullName = fullName;
+    await student.save();
+    return res.status(200).json({
+      message: "Student updated successfully",
+    })
+    }catch (error) {
+    console.error("Error updating student:", error);
+    return res.status(500).json({
+      message: "Failed to update student",
+      error: error.message
+    })
+  }
 };

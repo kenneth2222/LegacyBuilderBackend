@@ -120,7 +120,16 @@ exports.resetStudentPasswordSchema = joi.object().keys({
           'any.required': 'Confirm password is required'
       })
     });
+exports.updateStudentSchema = joi.object().keys({
+  name: joi.string().trim().min(3).max(50).required()
+  .messages({
+    "string.empty": "Name cannot be empty",
+    "string.min": "Name must be at least 3 characters long",
+    "string.max": "Name must not be more than 50 characters long",
+    "any.required": "Name is required"
+  })
 
+})
      
 
 
