@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating, getStudentById} = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating, getStudentById,
+   updateStudent} = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -1362,6 +1363,8 @@ studentRouter.put('/myRating/:studentId', myRating);
  *                   example: "Error details"
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
+
+studentRouter.post('/student/update',updateStudent)
 
 
 //This is just to keep the render active
