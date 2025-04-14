@@ -103,6 +103,13 @@ exports.registerStudent = async (req, res) => {
       });
     }
 
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error registering user",
       error: error.message,
@@ -178,6 +185,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
         res.status(200).json({
           message: "Account verified successfully",
         });
@@ -273,7 +284,6 @@ exports.loginStudent = async (req, res) => {
 
     res.status(200).json({
       message: "Account login successful",
-      data: student,
       data: student,
       token,
     });
@@ -935,21 +945,10 @@ exports.myRating = async (req, res) => {
       });
     }
 
-    const allowedSubjects = [
-      'English',
-      'Mathematics',
-      'Physics',
-      'Chemistry',
-      'Biology',
-      'Literature in English',
-      'Economics',
-      'Geography',
-      'Government',
-      'History'
-    ];
+    //This is to get the index position if the subject exist in the array
+    const existingRatingIndex = student.myRating.findIndex((item) => item.subject === subject);
 
-    const existingRatingIndex = student.myRating.findIndex((rating) => rating.subject === subject);
-
+    //-1 means that it exist and it then updates it
     if (existingRatingIndex !== -1) {
       student.myRating[existingRatingIndex].performance = performance;
       student.myRating[existingRatingIndex].duration = duration;
@@ -963,6 +962,12 @@ exports.myRating = async (req, res) => {
       };
 
       student.myRating.push(ratingData);
+    }
+
+    if (student.myRating.length > 0) {
+      const totalPerformance = student.myRating.reduce((acc, item) => acc + item.performance, 0);
+      const averageRating = totalPerformance / student.myRating.length;
+      student.totalRating = averageRating;
     }
 
     await student.save();
@@ -979,4 +984,35 @@ exports.myRating = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+
+exports.getStudentById = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+    return res.status(200).json({
+      message: "Student retrieved successfully",
+      data: student,
+    });  
+  } catch (error) {
+    console.error("Error retrieving student:", error);
+    return res.status(500).json({
+      message: "Failed to retrieve student",
+      error: error.message,
+    });
+  }  
 };

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
-   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating} = require('../controller/studentController');
+   filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating, getStudentById} = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -1137,7 +1137,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  * /api/v1/myRating/{studentId}:
  *   put:
  *     summary: Update a student's rating for a subject
- *     description: Updates the rating of a student based on their performance in a specific subject, including score, duration, and completion status.
+ *     description: Allows the student to update their rating for a specific subject, including performance, duration, and whether the subject is completed or not.
  *     tags:
  *       - Students
  *     parameters:
@@ -1156,19 +1156,33 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *             properties:
  *               subject:
  *                 type: string
- *                 example: "Biology"
+ *                 example: "Mathematics"
+ *                 enum:
+ *                   - "English"
+ *                   - "Mathematics"
+ *                   - "Physics"
+ *                   - "Chemistry"
+ *                   - "Biology"
+ *                   - "Literature in English"
+ *                   - "Economics"
+ *                   - "Geography"
+ *                   - "Government"
+ *                   - "History"
  *               performance:
- *                 type: integer
- *                 example: 80
+ *                 type: number
+ *                 example: 85
+ *                 description: The student's performance rating for the subject (0-100)
  *               duration:
- *                 type: integer
+ *                 type: number
  *                 example: 120
+ *                 description: The duration of study or time spent on the subject in minutes
  *               completed:
  *                 type: string
+ *                 example: "yes"
  *                 enum:
  *                   - "yes"
  *                   - "no"
- *                 example: "yes"
+ *                 description: Whether the student has completed the subject (yes or no)
  *     responses:
  *       200:
  *         description: Student rating updated successfully
@@ -1185,7 +1199,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                   properties:
  *                     _id:
  *                       type: string
- *                       example: "604c1f1c25c8b242f0a3d5f1"
+ *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
  *                     fullName:
  *                       type: string
  *                       example: "John Doe"
@@ -1199,18 +1213,21 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                         properties:
  *                           subject:
  *                             type: string
- *                             example: "Biology"
+ *                             example: "Mathematics"
  *                           performance:
  *                             type: number
- *                             example: 80
+ *                             example: 85
  *                           duration:
  *                             type: number
  *                             example: 120
  *                           completed:
  *                             type: string
  *                             example: "yes"
+ *                     totalRating:
+ *                       type: number
+ *                       example: 85
  *       400:
- *         description: Bad request (e.g., missing studentId, subject, or invalid values)
+ *         description: Bad request (e.g., missing studentId, subject, performance, or invalid operation)
  *         content:
  *           application/json:
  *             schema:
@@ -1245,6 +1262,106 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  */
 
 studentRouter.put('/myRating/:studentId', myRating);
+
+
+/**
+ * @swagger
+ * /api/v1/studentInfo/{studentId}:
+ *   get:
+ *     summary: Retrieve student details by student ID
+ *     description: Fetch a student's details using their unique student ID.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to retrieve
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student retrieved successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
+ *                     fullName:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     enrolledSubjects:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["English", "Mathematics"]
+ *                     myRating:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           subject:
+ *                             type: string
+ *                             example: "Mathematics"
+ *                           performance:
+ *                             type: number
+ *                             example: 85
+ *                           duration:
+ *                             type: number
+ *                             example: 120
+ *                           completed:
+ *                             type: string
+ *                             example: "yes"
+ *                     totalRating:
+ *                       type: number
+ *                       example: 85
+ *       400:
+ *         description: Bad request (e.g., missing studentId)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student ID is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to retrieve student"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+studentRouter.get('/studentInfo/:studentId', getStudentById);
 
 
 //This is just to keep the render active
