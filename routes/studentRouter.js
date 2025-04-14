@@ -1169,6 +1169,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                   - "Geography"
  *                   - "Government"
  *                   - "History"
+ *                 description: The subject for which the rating is being updated
  *               performance:
  *                 type: number
  *                 example: 85
@@ -1364,92 +1365,6 @@ studentRouter.put('/myRating/:studentId', myRating);
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
-
-/**
- * @swagger
- * /api/v1/student/{studentId}:
- *   put:
- *     summary: Update a student's information
- *     description: Updates an existing student's full name using their student ID.
- *     tags:
- *       - Students
- *     security: [] # No Authentication Needed
- *     parameters:
- *       - in: path
- *         name: studentId
- *         required: true
- *         schema:
- *           type: string
- *         description: Unique ID of the student to update
- *         example: "607f1f77bcf86cd799439011"
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - fullName
- *             properties:
- *               fullName:
- *                 type: string
- *                 description: Updated full name of the student
- *                 example: "Jane Doe"
- *     responses:
- *       200:
- *         description: Student updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Student updated successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       description: Unique student ID
- *                       example: "607f1f77bcf86cd799439011"
- *                     fullName:
- *                       type: string
- *                       description: Updated full name of the student
- *                       example: "Jane Doe"
- *       400:
- *         description: Bad Request - Validation error or missing required fields
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Full name is required"
- *       404:
- *         description: Not Found - Student ID does not exist
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Student not found"
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Error updating student"
- */
-
-studentRouter.post('/student/update',updateStudent)
 
 
 //This is just to keep the render active
