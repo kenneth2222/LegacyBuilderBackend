@@ -1365,10 +1365,7 @@ studentRouter.put('/myRating/:studentId', myRating);
  */
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
-<<<<<<< HEAD
-=======
 studentRouter.post('/studentUpdate/:studentId', updateStudent)
->>>>>>> 31ca2cd1481645c1469cd151522976a8ae812e32
 
 /**
  * @swagger
