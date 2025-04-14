@@ -1365,6 +1365,7 @@ studentRouter.put('/myRating/:studentId', myRating);
 studentRouter.get('/studentInfo/:studentId', getStudentById);
 
 studentRouter.post('/student/update',updateStudent)
+<<<<<<< HEAD
 
 
 
@@ -1453,6 +1454,8 @@ studentRouter.post('/student/update',updateStudent)
  */
 
 studentRouter.post('/student/update',updateStudent)
+=======
+>>>>>>> cb650c9b3ee3362126896a8450dd08d2455dc4ee
 
 
 //This is just to keep the render active

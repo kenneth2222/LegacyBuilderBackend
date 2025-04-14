@@ -1,12 +1,15 @@
-const mongoose = require("mongoose")
-const DB = process.env.MONGODB_URI
+//Import Mongoose
 
-mongoose.connect(DB)
-.then(()=> {
-    console.log('connection to database successful');
-    
-})
-.catch((error) => {
-    console.log("error connectiong to database" + error.message);
-    
-})
+const mongoose = require('mongoose');
+require('dotenv').config();
+const DATABASE_URL = process.env.DATABASE_URL;
+// Connect to MongoDB
+
+mongoose.connect(DATABASE_URL).then(() => {
+    console.log('Connected to Database');
+}).catch(error => {
+    console.error('Error connecting to Database:' + error.message);
+});
+// Export Mongoose
+
+module.exports = mongoose;

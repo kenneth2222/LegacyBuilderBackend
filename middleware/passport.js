@@ -45,9 +45,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "https://legacybuilderbackend.onrender.com/auth/facebook/login", //This is
-      // callbackURL: "https://legacybuilderbacken d.onrender.com/facebookAuthenticate", //This is
-      // callbackURL: "http://localhost:2025/auth/facebook/callback",
+      callbackURL: "http://localhost:2025/auth/facebook/callback",
       profileFields: ["id", "displayName", "emails"],
     },
     async (accessToken, refreshToken, profile, cb) => {

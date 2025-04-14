@@ -21,7 +21,6 @@ const {
   forgotPasswordSchema,
   changeStudentPasswordSchema,
   resetStudentPasswordSchema,
-  updateStudentSchema,
 } = require("../middleware/validator");
 
 
@@ -61,9 +60,11 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const link = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/verify/student/${token}`;
+    // const link = `${req.protocol}://${req.get(
+    //   "host"
+    // )}/api/v1/verify/student/${token}`;
+    const link = `https://legacy-builder.vercel.app/verify/${token}`;
+    
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -139,7 +140,7 @@ exports.verifyStudent = async (req, res) => {
           }
 
           if (student.isVerified === true) {
-            return res.status(200).json({
+            return res.status(400).json({
               message: "Account is verified already",
             });
           }
@@ -149,10 +150,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          const link = `${req.protocol}://${req.get(
-            "host"
-          )}/api/v1/verify/student/${newToken}`;
-          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          // const link = `${req.protocol}://${req.get(
+          //   "host"
+          // )}/api/v1/verify/student/${newToken}`;
+          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -259,7 +260,8 @@ exports.loginStudent = async (req, res) => {
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
-      const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      const link = `https://legacy-builder.vercel.app/verify/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
@@ -314,8 +316,9 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; 
+    const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; 
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
