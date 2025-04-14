@@ -51,6 +51,8 @@ exports.registerStudent = async (req, res) => {
       enrolledSubjects,
     });
 
+    await student.save();
+
     const scoreBoardEntries = student.enrolledSubjects.map((subject) => ({
       studentId: student._id,
       subject,
@@ -61,9 +63,10 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const link = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/verify/student/${token}`;
+    // const link = `${req.protocol}://${req.get(
+    //   "host"
+    // )}/api/v1/verify/student/${token}`;
+    const link = `https://legacy-builder.vercel.app/verify/${token}`;
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -73,43 +76,18 @@ exports.registerStudent = async (req, res) => {
     };
 
     await send_mail(mailOptions);
-    await student.save();
+    
 
     res.status(201).json({
       message: "Student registered successfully",
       data: student,
     });
+
+
   } catch (error) {
-    console.log(error.message);
-  //This catch block is for handling errors from the validation schema
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
-      });
-    }
+    console.log("Error registering student:", error.message)
 
-  //This catch block is for handling errors from the validation schema
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
-      });
-    }
-
-  //This catch block is for handling errors from the validation schema
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
-      });
-    }
-
-  //This catch block is for handling errors from the validation schema
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
-      });
-    }
-
-  //This catch block is for handling errors from the validation schema
+    //This catch block is for handling errors from the validation schema
     if (error.isJoi) {
       return res.status(400).json({
         message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
@@ -156,10 +134,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          const link = `${req.protocol}://${req.get(
-            "host"
-          )}/api/v1/verify/student/${newToken}`;
-          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          // const link = `${req.protocol}://${req.get(
+          //   "host"
+          // )}/api/v1/verify/student/${newToken}`;
+          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -191,22 +169,6 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
-        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
-        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
-        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
-        res.status(200).json({
-          message: "Account verified successfully",
-        });
-        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
         res.status(200).json({
           message: "Account verified successfully",
         });
@@ -248,7 +210,7 @@ exports.loginStudent = async (req, res) => {
 
     if (!student) {
       return res.status(400).json({
-        message: "User not found with that username",
+        message: "User not found",
       });
     }
 
@@ -270,7 +232,8 @@ exports.loginStudent = async (req, res) => {
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
-      const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
+      const link = `https://legacy-builder.vercel.app/verify/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
@@ -284,6 +247,7 @@ exports.loginStudent = async (req, res) => {
         message: "Account is not verified, link has been sent to email address",
       });
     }
+
     student.isLoggedIn = true;
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1day",
@@ -303,6 +267,13 @@ exports.loginStudent = async (req, res) => {
         message: "Session expired. Please login again",
       });
     }
+
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     res.status(500).json({
       message: "Error Logging user In",
       data: error.message,
@@ -325,7 +296,8 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
+    const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; // consumed post link
     // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     const firstName = student.fullName.split(" ")[0];
 
@@ -953,18 +925,18 @@ exports.myRating = async (req, res) => {
       });
     }
 
-    const allowedSubjects = [
-      'English',
-      'Mathematics',
-      'Physics',
-      'Chemistry',
-      'Biology',
-      'Literature in English',
-      'Economics',
-      'Geography',
-      'Government',
-      'History'
-    ];
+    // const allowedSubjects = [
+    //   'English',
+    //   'Mathematics',
+    //   'Physics',
+    //   'Chemistry',
+    //   'Biology',
+    //   'Literature in English',
+    //   'Economics',
+    //   'Geography',
+    //   'Government',
+    //   'History'
+    // ];
 
     const existingRatingIndex = student.myRating.findIndex((rating) => rating.subject === subject);
 
@@ -982,12 +954,6 @@ exports.myRating = async (req, res) => {
       };
 
       student.myRating.push(ratingData);
-    }
-
-    if (student.myRating.length > 0) {
-      const totalPerformance = student.myRating.reduce((acc, item) => acc + item.performance, 0);
-      const averageRating = totalPerformance / student.myRating.length;
-      student.totalRating = averageRating;
     }
 
     if (student.myRating.length > 0) {
@@ -1045,30 +1011,40 @@ exports.getStudentById = async (req, res) => {
 
 exports.updateStudent = async (req, res) => {
   try {
-    const validatedData = await validate(req.body,updateStudentSchema);
-    const { studentId} = validatedData;
-    const { fullName} = validatedData;
-    const student = await studentModel.findById(studentId)
-    if (!studentId) {
-      return res.status(400).json({
-        message: "Student ID is required",
-      })
+    const { studentId } = req.params;
+
+    
+    const validatedData = await validate(req.body, updateStudentSchema);
+    const { fullName } = validatedData;
+
+    
+    const student = await studentModel.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
     }
-    if (!fullName) {
-      return res.status(400).json({
-        message: "Full name is required",
-      })
-    }
+
     student.fullName = fullName;
     await student.save();
+
     return res.status(200).json({
       message: "Student updated successfully",
-    })
-    }catch (error) {
+      data: student
+    });
+  } catch (error) {
     console.error("Error updating student:", error);
+
+    
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
     return res.status(500).json({
       message: "Failed to update student",
-      error: error.message
-    })
+      error: error.message,
+    });
   }
 };
