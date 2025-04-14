@@ -1139,7 +1139,6 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *   put:
  *     summary: Update a student's rating for a subject
  *     description: Allows the student to update their rating for a specific subject, including performance, duration, and whether the subject is completed or not.
- *     description: Allows the student to update their rating for a specific subject, including performance, duration, and whether the subject is completed or not.
  *     tags:
  *       - Students
  *     parameters:
@@ -1170,39 +1169,21 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                   - "Geography"
  *                   - "Government"
  *                   - "History"
- *                 example: "Mathematics"
- *                 enum:
- *                   - "English"
- *                   - "Mathematics"
- *                   - "Physics"
- *                   - "Chemistry"
- *                   - "Biology"
- *                   - "Literature in English"
- *                   - "Economics"
- *                   - "Geography"
- *                   - "Government"
- *                   - "History"
+ *                 description: The subject for which the rating is being updated
  *               performance:
- *                 type: number
- *                 example: 85
- *                 description: The student's performance rating for the subject (0-100)
  *                 type: number
  *                 example: 85
  *                 description: The student's performance rating for the subject (0-100)
  *               duration:
  *                 type: number
- *                 type: number
  *                 example: 120
- *                 description: The duration of study or time spent on the subject in minutes
  *                 description: The duration of study or time spent on the subject in minutes
  *               completed:
  *                 type: string
  *                 example: "yes"
- *                 example: "yes"
  *                 enum:
  *                   - "yes"
  *                   - "no"
- *                 description: Whether the student has completed the subject (yes or no)
  *                 description: Whether the student has completed the subject (yes or no)
  *     responses:
  *       200:
@@ -1221,7 +1202,6 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                     _id:
  *                       type: string
  *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
- *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
  *                     fullName:
  *                       type: string
  *                       example: "John Doe"
@@ -1236,10 +1216,8 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                           subject:
  *                             type: string
  *                             example: "Mathematics"
- *                             example: "Mathematics"
  *                           performance:
  *                             type: number
- *                             example: 85
  *                             example: 85
  *                           duration:
  *                             type: number
@@ -1250,11 +1228,7 @@ studentRouter.put('/removeSubject/:studentId', removeSubject);
  *                     totalRating:
  *                       type: number
  *                       example: 85
- *                     totalRating:
- *                       type: number
- *                       example: 85
  *       400:
- *         description: Bad request (e.g., missing studentId, subject, performance, or invalid operation)
  *         description: Bad request (e.g., missing studentId, subject, performance, or invalid operation)
  *         content:
  *           application/json:
