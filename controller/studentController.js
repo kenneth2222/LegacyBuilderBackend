@@ -590,7 +590,7 @@ exports.uploadImage = async (req, res) => {
         fit: sharp.fit.inside,  // Ensures the image fits inside the specified dimensions while maintaining aspect ratio
         withoutEnlargement: true  // Prevents enlarging small images
       })
-        .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
+        // .jpeg({ quality: 70 }) // Compress JPEG to 70% quality
         .toFile(compressedFilePath);
 
       result = await cloudinary.uploader.upload(compressedFilePath, {
@@ -683,7 +683,7 @@ exports.updateImage = async (req, res) => {
       fit: sharp.fit.inside,
       withoutEnlargement: true,
     })
-    .jpeg({ quality: 70 })
+    // .jpeg({ quality: 70 }) //This is to reduce the quality
     .toFile(compressedFilePath);
 
    
