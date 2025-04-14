@@ -21,6 +21,7 @@ const {
   forgotPasswordSchema,
   changeStudentPasswordSchema,
   resetStudentPasswordSchema,
+  updateStudentSchema,
 } = require("../middleware/validator");
 
 
@@ -60,11 +61,9 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    // const link = `${req.protocol}://${req.get(
-    //   "host"
-    // )}/api/v1/verify/student/${token}`;
-    const link = `https://legacy-builder.vercel.app/verify/${token}`;
-    
+    const link = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/verify/student/${token}`;
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -82,6 +81,13 @@ exports.registerStudent = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+  //This catch block is for handling errors from the validation schema
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((detail) => detail.message.replace(/"/g, "")).join(", "),
+      });
+    }
+
   //This catch block is for handling errors from the validation schema
     if (error.isJoi) {
       return res.status(400).json({
@@ -140,7 +146,7 @@ exports.verifyStudent = async (req, res) => {
           }
 
           if (student.isVerified === true) {
-            return res.status(400).json({
+            return res.status(200).json({
               message: "Account is verified already",
             });
           }
@@ -150,10 +156,10 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          // const link = `${req.protocol}://${req.get(
-          //   "host"
-          // )}/api/v1/verify/student/${newToken}`;
-          const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
+          const link = `${req.protocol}://${req.get(
+            "host"
+          )}/api/v1/verify/student/${newToken}`;
+          // const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
           const mailOptions = {
@@ -185,6 +191,10 @@ exports.verifyStudent = async (req, res) => {
         student.isVerified = true;
         await student.save();
 
+        res.status(200).json({
+          message: "Account verified successfully",
+        });
+        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
         res.status(200).json({
           message: "Account verified successfully",
         });
@@ -260,8 +270,7 @@ exports.loginStudent = async (req, res) => {
       // const link = `${req.protocol}://${req.get(
       //   "host"
       // )}/api/v1/verify/student/${token}`;
-      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
-      const link = `https://legacy-builder.vercel.app/verify/${token}`;
+      const link = `${baseUrl}/api/v1/verify/student/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
       const mailOptions = {
@@ -316,9 +325,8 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
+    const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
-    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; 
-    const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; 
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -945,8 +953,20 @@ exports.myRating = async (req, res) => {
       });
     }
 
-    //This is to get the index position if the subject exist in the array
-    const existingRatingIndex = student.myRating.findIndex((item) => item.subject === subject);
+    const allowedSubjects = [
+      'English',
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Literature in English',
+      'Economics',
+      'Geography',
+      'Government',
+      'History'
+    ];
+
+    const existingRatingIndex = student.myRating.findIndex((rating) => rating.subject === subject);
 
     //-1 means that it exist and it then updates it
     if (existingRatingIndex !== -1) {
@@ -962,6 +982,12 @@ exports.myRating = async (req, res) => {
       };
 
       student.myRating.push(ratingData);
+    }
+
+    if (student.myRating.length > 0) {
+      const totalPerformance = student.myRating.reduce((acc, item) => acc + item.performance, 0);
+      const averageRating = totalPerformance / student.myRating.length;
+      student.totalRating = averageRating;
     }
 
     if (student.myRating.length > 0) {
