@@ -1459,6 +1459,98 @@ studentRouter.post('/studentUpdate/:studentId', updateStudent)
 
 studentRouter.post('/studentUpdate/:studentId', updateStudent)
 
+/**
+ * @swagger
+ * /api/v1/studentUpdate/{studentId}:
+ *   post:
+ *     summary: Update a student's full name
+ *     description: Update a student's full name using their unique student ID.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to update
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fullName
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *                 example: "Jane Doe"
+ *     responses:
+ *       200:
+ *         description: Student updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60c72b2f9b1d8b4b9e6b8d8e"
+ *                     fullName:
+ *                       type: string
+ *                       example: "Jane Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "janedoe@example.com"
+ *                     enrolledSubjects:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["English", "Mathematics"]
+ *       400:
+ *         description: Validation error or bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "fullName is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update student"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+
+studentRouter.post('/studentUpdate/:studentId', updateStudent)
+
 
 //This is just to keep the render active
 studentRouter.get('/students', getAllStudents);
