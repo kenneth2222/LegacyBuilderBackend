@@ -15,7 +15,7 @@ const {getQuestions, getMockQuestions} = require("../controller/questionControll
  *         required: true
  *         schema:
  *           type: string
- *         description: The year for which questions are to be fetched (e.g., 2015)
+ *         description: The year for which questions are to be fetched (e.g., 2002)
  *       - in: path
  *         name: subject
  *         required: true
