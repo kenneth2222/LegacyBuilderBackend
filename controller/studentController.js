@@ -1048,3 +1048,51 @@ exports.updateStudent = async (req, res) => {
     });
   }
 };
+
+exports.getStudentNotEnrolledSubjects = async (req, res) => { 
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        message: "Student ID is required",
+      });
+    }
+
+    const student = await studentModel.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    const allSubjects = [
+      'English',
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Literature in English',
+      'Economics',
+      'Geography',
+      'Government',
+      'History'
+    ];
+
+    const notEnrolledSubjects = allSubjects.filter(subject => !student.enrolledSubjects.includes(subject));
+
+    return res.status(200).json({
+      message: "Not enrolled subjects retrieved successfully",
+      data: notEnrolledSubjects,
+    });
+  } catch (error) {
+    console.error("Error retrieving not enrolled subjects:", error);
+    return res.status(500).json({
+      message: "Failed to retrieve not enrolled subjects",
+      error: error.message,
+    });
+  }
+}
+
+   

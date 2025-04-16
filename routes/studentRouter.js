@@ -3,7 +3,7 @@ const upload = require('../utils/multer')
 const {registerAdmin, registerStudent, verifyStudent, loginStudent, forgotStudentPassword,
    resetStudentPassword, changeStudentPassword,logoutStudent, getStudentsWithPointsAndResults,
    filterStudentsWithPointsAndResultsBySubject, uploadImage, updateImage, deleteImage, getAllStudents, addSubject, removeSubject, myRating, getStudentById,
-   updateStudent} = require('../controller/studentController');
+   updateStudent, getStudentNotEnrolledSubjects} = require('../controller/studentController');
 
 const { authenticate, adminAuth} = require('../middleware/authentication');
 const passport = require("passport");
@@ -1826,6 +1826,74 @@ studentRouter.post('/studentUpdate/:studentId', updateStudent)
  */
 
 studentRouter.post('/studentUpdate/:studentId', updateStudent)
+
+/**
+ * @swagger
+ * /api/v1/studentNotSubjects/{studentId}:
+ *   get:
+ *     summary: Get subjects a student is not enrolled in
+ *     description: Retrieve a list of subjects a student has not enrolled in using their unique student ID.
+ *     tags:
+ *       - Students
+ *     parameters:
+ *       - name: studentId
+ *         in: path
+ *         description: ID of the student to retrieve unenrolled subjects for
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Not enrolled subjects retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Not enrolled subjects retrieved successfully"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Physics", "Economics", "History"]
+ *       400:
+ *         description: Validation error or bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student ID is required"
+ *       404:
+ *         description: Student not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Student not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to retrieve not enrolled subjects"
+ *                 error:
+ *                   type: string
+ *                   example: "Error details"
+ */
+
+studentRouter.get('/studentNotSubjects/:studentId', getStudentNotEnrolledSubjects)
 
 
 //This is just to keep the render active
