@@ -66,7 +66,7 @@ image: {
 
      plan: {
       type: String,
-      enum: ["Freemium", "Premium", "Lifetime Access Model"],
+      enum: ["Freemium", "Premium", "Lifetime Access"],
       default: "Freemium",
     },
 
