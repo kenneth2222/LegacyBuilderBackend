@@ -119,7 +119,7 @@ socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope:
  *                   example: "Internal server error"
  */
 
-socialRouter.get("/auth/google/callback", passport.authenticate("google",  { failureRedirect: "/login" }), async(req, res) => {
+socialRouter.get("/auth/google/login", passport.authenticate("google",  { failureRedirect: "/login" }), async(req, res) => {
     try {
     // const token = await jwt.sign({ userId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
     const token = await jwt.sign({ studentId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
@@ -255,11 +255,11 @@ socialRouter.get("/facebookAuthenticate", passport.authenticate("facebook", { sc
  */
 
 socialRouter.get(
-  "/auth/facebook/callback",
+  "/auth/facebook/login",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   async (req, res) => {
     try {
-      const token = await jwt.sign(
+      const token = jwt.sign(
         { studentId: req.user._id, isVerified: req.user.isVerified },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
@@ -267,12 +267,6 @@ socialRouter.get(
 
       const redirectUrl = `https://legacy-builder.vercel.app/callback/${token}/${req.user._id}`;
       return res.redirect(redirectUrl);
-
-      // res.status(200).json({
-      //   message: "Facebook Login Successful",
-      //   data: req.user,
-      //   token,
-      // });
     } catch (error) {
       console.error(error);
       res.status(500).json({
@@ -281,7 +275,6 @@ socialRouter.get(
     }
   }
 );
-
   module.exports = socialRouter;
 
 
