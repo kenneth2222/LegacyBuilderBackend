@@ -8,7 +8,7 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *   post:
  *     summary: Initialize Kora Payment for a student
  *     tags: [Kora Payment]
- *     description: Initiates a payment using the Kora API, stores transaction details, and redirects to a predefined frontend URL.
+ *     description: Initiates a payment using the Kora API, stores transaction details, and redirects to a predefined frontend URL with query parameters.
  *     parameters:
  *       - name: studentId
  *         in: path
@@ -40,6 +40,11 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *                 type: string
  *                 example: John Doe
  *                 description: Customer's full name
+ *               plan:
+ *                 type: string
+ *                 enum: [Freemium, Premium, Lifetime Access Model]
+ *                 example: Premium
+ *                 description: The plan the user is subscribing to
  *     responses:
  *       302:
  *         description: Redirects to frontend with reference, checkout URL, and studentId
@@ -47,7 +52,7 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *           Location:
  *             schema:
  *               type: string
- *             description: URL to which the user is redirected
+ *             description: The URL to which the client is redirected
  *             example: https://legacy-builder.vercel.app/payment-status?reference=TCA-AF-ABC123&checkout_url=https%3A%2F%2Fcheckout.korapay.com%2Fabc123&studentId=60c72b2f9b1d8b4b9e6b8d8e
  *       400:
  *         description: Missing required fields or student ID
