@@ -42,7 +42,7 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *                 description: Customer's full name
  *               plan:
  *                 type: string
- *                 enum: [Freemium, Premium, Lifetime Access Model]
+ *                 enum: [Freemium, Premium, Lifetime Access]
  *                 example: Premium
  *                 description: The plan the user is subscribing to
  *     responses:
@@ -78,7 +78,7 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
 
 
 
-transactionKoraRouter.post("/initializeKoraPay", initializePaymentKora);
+transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKora);
 
 /**
  * @swagger

@@ -151,6 +151,7 @@ exports.initializePaymentKora = async (req, res) => {
     );
 
     const { data } = response?.data;
+    console.log("Payment Data:", data);
 
     // Save the transaction
     const payment = new transactionKoraModel({
@@ -170,7 +171,8 @@ exports.initializePaymentKora = async (req, res) => {
     // });
 
     // Redirect with reference, checkout URL, and studentId
-    const fullRedirect = `${redirectUrl}?reference=${ref}&checkout_url=${encodeURIComponent(data?.checkout_url)}&studentId=${studentId}`;
+    // const fullRedirect = `${redirectUrl}?reference=${ref}&checkout_url=${encodeURIComponent(data?.checkout_url)}&studentId=${studentId}`;
+    const fullRedirect = `https://legacy-builder.vercel.app/payment-status?reference=${ref}&checkout_url=${encodeURIComponent(data?.checkout_url)}&studentId=${studentId}`;
 
     return res.redirect(fullRedirect);
 
