@@ -29,6 +29,10 @@ passport.use(new GoogleStrategy({
             enrolledSubjects: ['Mathematics', 'English'],
         });
         await student.save();
+      }else {
+        // Ensure isLoggedIn is set to true on every login
+        student.isLoggedIn = true;
+        await student.save();
       }
       return cb(null, student);
   }catch (error) {
