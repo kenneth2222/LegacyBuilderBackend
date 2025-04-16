@@ -15,8 +15,8 @@ passport.use(new GoogleStrategy({
   async function(accessToken, refreshToken, profile, cb) {
     try {
       let student = await studentModel.findOne({email: profile.emails[0].value});
+      const randomPassword = await bcrypt.hash(profile.id, 10);
       if(!student){
-        const randomPassword = await bcrypt.hash(profile.id, 10);
 
         student = new studentModel({
             fullName: profile.displayName,
@@ -50,7 +50,6 @@ passport.use(
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       callbackURL: "https://legacybuilderbackend.onrender.com/auth/facebook/login", //This is
-      // callbackURL: "https://legacybuilderbacken d.onrender.com/facebookAuthenticate", //This is
       // callbackURL: "http://localhost:2025/auth/facebook/callback",
       profileFields: ["id", "displayName", "emails"],
     },
@@ -70,6 +69,10 @@ passport.use(
             password: randomPassword,
             enrolledSubjects: ['Mathematics', 'English'],
           });
+          await student.save();
+        }else {
+          // Ensure isLoggedIn is set to true on every login
+          student.isLoggedIn = true;
           await student.save();
         }
         return cb(null, student);
