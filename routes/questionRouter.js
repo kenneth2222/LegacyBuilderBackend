@@ -15,13 +15,13 @@ const {getQuestions, getMockQuestions} = require("../controller/questionControll
  *         required: true
  *         schema:
  *           type: string
- *         description: The year for which questions are to be fetched (e.g., 2015)
+ *         description: The year for which questions are to be fetched (e.g., 2002)
  *       - in: path
  *         name: subject
  *         required: true
  *         schema:
  *           type: string
- *         description: The subject name (e.g., Biology). 
+ *         description: The subject name (e.g., Biology)
  *     responses:
  *       200:
  *         description: Questions retrieved successfully
@@ -40,15 +40,25 @@ const {getQuestions, getMockQuestions} = require("../controller/questionControll
  *                     properties:
  *                       question:
  *                         type: string
- *                         example: "What is photosynthesis?"
+ *                         example: What is the function of chlorophyll in photosynthesis?
  *                       options:
  *                         type: array
  *                         items:
  *                           type: string
- *                         example: ["Option A", "Option B", "Option C", "Option D"]
+ *                         example: ["To absorb light", "To release energy", "To produce oxygen", "To conduct heat"]
  *                       answer:
  *                         type: string
- *                         example: "Option C"
+ *                         example: To absorb light
+ *                       subheading:
+ *                         type: string
+ *                         nullable: true
+ *                         example: Use the diagram below to answer questions 1 and 2
+ *                 totalQuestions:
+ *                   type: integer
+ *                   example: 50
+ *                 year:
+ *                   type: integer
+ *                   example: 2015
  *       400:
  *         description: Bad request, missing parameters
  *         content:
@@ -61,7 +71,7 @@ const {getQuestions, getMockQuestions} = require("../controller/questionControll
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Subject name is required
+ *                   example: Subject and year are required
  *       500:
  *         description: Internal server error
  *         content:
@@ -74,8 +84,9 @@ const {getQuestions, getMockQuestions} = require("../controller/questionControll
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "Could not fetch questions: Error message"
+ *                   example: "Could not fetch questions: External API error or invalid format"
  */
+
 
 questionRouter.get('/fetch-questions/:year/:subject', getQuestions);
 

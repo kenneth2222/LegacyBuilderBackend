@@ -2,158 +2,158 @@ const transactionKoraRouter = require("express").Router();
 const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyPaymentPaystack} = require("../controller/transactionController");
 
 
-// /**
-//  * @swagger
-//  * /api/v1/initializeKoraPay:
-//  *   post:
-//  *     summary: Initialize Kora Payment
-//  *     tags: [Kora Payment]
-//  *     description: Initiates a payment using the Kora API and stores the transaction details.
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             type: object
-//  *             required:
-//  *               - amount
-//  *               - email
-//  *               - name
-//  *             properties:
-//  *               amount:
-//  *                 type: number
-//  *                 example: 5000
-//  *                 description: Amount to be paid (in NGN)
-//  *               email:
-//  *                 type: string
-//  *                 example: example@example.com
-//  *                 description: Customer's email address
-//  *               name:
-//  *                 type: string
-//  *                 example: John Doe
-//  *                 description: Customer's full name
-//  *     responses:
-//  *       200:
-//  *         description: Payment initialized successfully
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: Payment Successfully
-//  *                 data:
-//  *                   type: object
-//  *                   properties:
-//  *                     reference:
-//  *                       type: string
-//  *                       example: ref_abc123xyz
-//  *                     checkout_url:
-//  *                       type: string
-//  *                       example: https://checkout.korapay.com/abc123
-//  *       400:
-//  *         description: Bad request — Missing fields
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: All fields are required
-//  *       500:
-//  *         description: Internal Server Error
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: Something went wrong
-//  */
+/**
+ * @swagger
+ * /api/v1/initializeKoraPay:
+ *   post:
+ *     summary: Initialize Kora Payment
+ *     tags: [Kora Payment]
+ *     description: Initiates a payment using the Kora API and stores the transaction details.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - email
+ *               - name
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 example: 5000
+ *                 description: Amount to be paid (in NGN)
+ *               email:
+ *                 type: string
+ *                 example: example@example.com
+ *                 description: Customer's email address
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *                 description: Customer's full name
+ *     responses:
+ *       200:
+ *         description: Payment initialized successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Payment Successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: ref_abc123xyz
+ *                     checkout_url:
+ *                       type: string
+ *                       example: https://checkout.korapay.com/abc123
+ *       400:
+ *         description: Bad request — Missing fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: All fields are required
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Something went wrong
+ */
 transactionKoraRouter.post("/initializeKoraPay", initializePaymentKora);
 
-// /**
-//  * @swagger
-//  * /api/v1/verifyKoraPay:
-//  *   get:
-//  *     summary: Verify Kora Payment
-//  *     tags: [Kora Payment]
-//  *     description: Verifies the status of a Kora payment transaction using the provided reference.
-//  *     parameters:
-//  *       - in: query
-//  *         name: reference
-//  *         schema:
-//  *           type: string
-//  *         required: true
-//  *         description: The reference ID of the transaction to verify.
-//  *     responses:
-//  *       200:
-//  *         description: Payment verification successful.
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: Payment Verification Successfully
-//  *                 data:
-//  *                   type: object
-//  *                   properties:
-//  *                     _id:
-//  *                       type: string
-//  *                       example: 6613f017793fbcfc1a7c9b82
-//  *                     email:
-//  *                       type: string
-//  *                       example: user@example.com
-//  *                     name:
-//  *                       type: string
-//  *                       example: John Doe
-//  *                     amount:
-//  *                       type: number
-//  *                       example: 5000
-//  *                     reference:
-//  *                       type: string
-//  *                       example: ref_abc123xyz
-//  *                     status:
-//  *                       type: string
-//  *                       example: Success
-//  *                     paymentDate:
-//  *                       type: string
-//  *                       example: 2025-04-08
-//  *       400:
-//  *         description: Payment verification failed.
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: Payment Verification Failed
-//  *                 data:
-//  *                   type: object
-//  *                   properties:
-//  *                     reference:
-//  *                       type: string
-//  *                       example: ref_abc123xyz
-//  *                     status:
-//  *                       type: string
-//  *                       example: Failed
-//  *       500:
-//  *         description: Internal Server Error
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 message:
-//  *                   type: string
-//  *                   example: Internal Server Error
-//  */
+/**
+ * @swagger
+ * /api/v1/verifyKoraPay:
+ *   get:
+ *     summary: Verify Kora Payment
+ *     tags: [Kora Payment]
+ *     description: Verifies the status of a Kora payment transaction using the provided reference.
+ *     parameters:
+ *       - in: query
+ *         name: reference
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The reference ID of the transaction to verify.
+ *     responses:
+ *       200:
+ *         description: Payment verification successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Payment Verification Successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 6613f017793fbcfc1a7c9b82
+ *                     email:
+ *                       type: string
+ *                       example: user@example.com
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                     amount:
+ *                       type: number
+ *                       example: 5000
+ *                     reference:
+ *                       type: string
+ *                       example: ref_abc123xyz
+ *                     status:
+ *                       type: string
+ *                       example: Success
+ *                     paymentDate:
+ *                       type: string
+ *                       example: 2025-04-08
+ *       400:
+ *         description: Payment verification failed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Payment Verification Failed
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: ref_abc123xyz
+ *                     status:
+ *                       type: string
+ *                       example: Failed
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 transactionKoraRouter.get("/verifyKoraPay", verifyPaymentKora);
 
 // /**
