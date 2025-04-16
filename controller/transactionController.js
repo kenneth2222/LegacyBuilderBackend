@@ -179,6 +179,7 @@ exports.initializePaymentKora = async (req, res) => {
         message: error.message
       });
     }
+
   };
 
 exports.verifyPaymentKora = async (req, res) => {
@@ -247,11 +248,7 @@ exports.verifyPaymentKora = async (req, res) => {
     }
   };
   
-  
-
-
-
-
+ 
 exports.initialPaymentPaystack = async (req, res) => {
     try {
         const { email, amount } = req.body;
