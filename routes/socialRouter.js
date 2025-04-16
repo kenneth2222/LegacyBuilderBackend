@@ -121,7 +121,8 @@ socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope:
 
 socialRouter.get("/auth/google/login", passport.authenticate("google",  { failureRedirect: "/login" }), async(req, res) => {
     try {
-    const token = await jwt.sign({ userId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
+    // const token = await jwt.sign({ userId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
+    const token = await jwt.sign({ studentId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
     const redirectUrl = `https://legacy-builder.vercel.app/callback/${token}/${req.user._id}`;
     return res.redirect(redirectUrl);
     // res.status(200).json({
