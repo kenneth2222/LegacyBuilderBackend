@@ -128,133 +128,87 @@ exports.initializePaymentKora = async (req, res) => {
     }
 
     const ref = `TCA-AF-${otpGenerator.generate(12, { specialChars: false })}`;
-    console.log("Generated Ref:", ref);
+    // console.log("Generated Ref:", ref);
 
-    const paymentData = {
-      amount,
-      customer: {
-        name,
-        email
-      },
-      currency: "NGN",
-      reference: ref
-    };
-
-    const response = await axios.post(
-      "https://api.korapay.com/merchant/api/v1/charges/initialize",
-      paymentData,
-      {
-        headers: {
-          Authorization: `Bearer ${SECRET_KEY_KORA}`
+        const paymentData = {
+            amount,
+            customer: {
+                name,
+                email
+            },
+            currency: "NGN",
+            reference: ref
         }
-      }
-    );
 
-    const { data } = response?.data;
+        const response = await axios.post("https://api.korapay.com/merchant/api/v1/charges/initialize", paymentData, {
 
-    // Save the transaction
-    const payment = new transactionKoraModel({
-      name,
-      email,
-      amount,
-      reference: ref,
-      paymentDate: formattedDate,
-      status: "Pending" // mark as pending until verification
-    });
+            headers: {
+                Authorization: `Bearer ${SECRET_KEY_KORA}`
+            }
+        });
+
+        const {data} = response?.data;
+        const payment = new transactionKoraModel({
+            name,
+            email,
+            amount,
+            reference: paymentData.reference,
+            paymentDate: formattedDate,
+        });
 
     await payment.save();
 
-    // Update the student with selected plan (optional)
-    // await studentModel.findByIdAndUpdate(studentId, {
-    //   plan: plan // e.g. "Premium"
-    // });
+        res.status(200).json({
+            message: "Payment Successfully",
+            data: {
+                reference: data?.reference,
+                checkout_url: data?.checkout_url
+            }
+        })
+        
 
-    // Redirect with reference, checkout URL, and studentId
-    const fullRedirect = `${redirectUrl}?reference=${ref}&checkout_url=${encodeURIComponent(data?.checkout_url)}&studentId=${studentId}`;
-
-    return res.redirect(fullRedirect);
-
-  } catch (error) {
-    console.log("Initialize Payment Error:", error.message);
-    return res.status(500).json({
-      message: error.message
-    });
-  }
-};
-
-
+    }catch(error){
+        console.log(error.message);
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
 
 exports.verifyPaymentKora = async (req, res) => {
   try {
     const { reference } = req.query;
 
-    if ( !reference ) {
-      return res.status(400).json({
-        message: "Reference is required"
-      });
-    }
+        const response = await axios.get(`https://api.korapay.com/merchant/api/v1/charges/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${SECRET_KEY_KORA}`
+            }
+        });
 
-    // Verify transaction with Korapay
-    const response = await axios.get(
-      `https://api.korapay.com/merchant/api/v1/charges/${reference}`,
-      {
-        headers: {
-          Authorization: `Bearer ${SECRET_KEY_KORA}`
+        const {data} = response?.data;
+
+        //This Optional Chaining
+        if(data?.status && data?.status === "success"){
+            const payment = await transactionKoraModel.findOneAndUpdate({reference}, {status: "Success"}, {new: true});
+            res.status(200).json({
+                message: "Payment Verification Successfully",
+                data: payment
+            });
+        }else{
+            const payment = await transactionKoraModel.findOneAndUpdate({reference}, {status: "Failed"}, {new: true});
+            res.status(400).json({
+                message: "Payment Verification Failed",
+                data: payment
+            });
         }
-      }
-    );
 
-    const { data } = response?.data;
-
-    // Fetch the local payment record
-    const payment = await transactionKoraModel.findOne({ reference });
-
-    if (!payment) {
-      return res.status(404).json({
-        message: "Transaction not found"
-      });
+    }catch(error){
+        console.log(error.message)
+        res.status(500).json({
+            message: `Internal Server Error` + error.message
+        });
     }
-
-    const student = await studentModel.findOne({ email: payment.email });
-
-    if (!student) {
-      return res.status(404).json({
-        message: "Student not found"
-      });
-    }
-
-    if (data?.status === "success") {
-      // Update payment and student status
-      payment.status = "Success";
-      await payment.save();
-
-      student.plan = "Premium"; // or "Lifetime Access" if logic applies
-      await student.save();
-
-      
-      const redirectSuccess = `${redirectUrl}?status=success&reference=${reference}&studentId=${student._id}`;
-      return res.redirect(redirectSuccess);
-    } else {
-      // Update payment as failed
-      payment.status = "Failed";
-      await payment.save();
-
-      const redirectFail = `${redirectUrl}?status=failed&reference=${reference}&studentId=${student._id}`;
-      return res.redirect(redirectFail);
-    }
-  } catch (error) {
-    console.error("Verification Error:", error.message);
-    return res.status(500).json({
-      message: `Internal Server Error: ${error.message}`
-    });
-  }
-};
-
-
-
-
-
-
+}
 
 exports.initialPaymentPaystack = async (req, res) => {
     try {
