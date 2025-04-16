@@ -4,8 +4,8 @@ const transactionKoraModel = require("../model/transactionKora");
 const transactionPaystackModel = require("../model/transactionPaystack");
 const axios = require("axios");
 const otpGenerator = require("otp-generator");
-const otp = otpGenerator.generate(12, { specialChars: false });
-const ref = `TCA-AF-${otp}`;
+// const otp = otpGenerator.generate(12, { specialChars: false });
+// const ref = `TCA-AF-${otp}`;
 const SECRET_KEY_KORA = process.env.KORAPAY_SECRET_KEY;
 const SECRET_KEY_PAYSTACK = process.env.PAYSTACK_SECRET_KEY
 const formattedDate = new Date().toLocaleString();
@@ -19,6 +19,8 @@ exports.initializePaymentKora = async (req, res) => {
                 message: "All fields are required"
             });
         }
+
+        const ref = `TCA-AF-${otpGenerator.generate(12, { specialChars: false })}`;
 
         const paymentData = {
             amount,
