@@ -207,6 +207,7 @@ exports.verifyPaymentKora = async (req, res) => {
     );
 
     const { data } = response?.data;
+    console.log("Verification Data:", data);
 
     // Fetch the local payment record
     const payment = await transactionKoraModel.findOne({ reference });
@@ -234,14 +235,14 @@ exports.verifyPaymentKora = async (req, res) => {
       await student.save();
 
       
-      const redirectSuccess = `${redirectUrl}?status=success&reference=${reference}&studentId=${student._id}`;
+      const redirectSuccess = `https://legacy-builder.vercel.app/payment-status?status=success&reference=${reference}&studentId=${student._id}`;
       return res.redirect(redirectSuccess);
     } else {
       // Update payment as failed
       payment.status = "Failed";
       await payment.save();
 
-      const redirectFail = `${redirectUrl}?status=failed&reference=${reference}&studentId=${student._id}`;
+      const redirectFail = `https://legacy-builder.vercel.app/payment-status?status=failed&reference=${reference}&studentId=${student._id}`;
       return res.redirect(redirectFail);
     }
   } catch (error) {
