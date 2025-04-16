@@ -119,6 +119,7 @@ socialRouter.get("/googleAuthenticate", passport.authenticate("google", { scope:
  *                   example: "Internal server error"
  */
 
+
 socialRouter.get("/auth/google/login", passport.authenticate("google",  { failureRedirect: "/login" }), async(req, res) => {
     try {
     // const token = await jwt.sign({ userId: req.user._id, isVerified: req.user.isVerified}, process.env.JWT_SECRET, {expiresIn: "1d"});
@@ -259,6 +260,7 @@ socialRouter.get(
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   async (req, res) => {
     try {
+    
       const token = jwt.sign(
         { studentId: req.user._id, isVerified: req.user.isVerified },
         process.env.JWT_SECRET,
