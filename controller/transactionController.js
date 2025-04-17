@@ -128,7 +128,7 @@ exports.verifyPaymentKora = async (req, res) => {
     });
     }
 
-    console.log("Payment Plan:", payment.plan);
+    // console.log("Payment Plan:", payment.plan);
 
     
     if (updatedStatus === "Success") {
