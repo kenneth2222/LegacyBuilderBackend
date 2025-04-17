@@ -4,18 +4,11 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
 
 /**
  * @swagger
- * /api/v1/initializeKoraPay/{studentId}:
+ * /api/v1/initializeKoraPay:
  *   post:
- *     summary: Initialize Kora Payment for a student
+ *     summary: Initialize Kora Payment
  *     tags: [Kora Payment]
- *     description: Initiates a payment using the Kora API, stores transaction details, and redirects to a predefined frontend URL with query parameters.
- *     parameters:
- *       - name: studentId
- *         in: path
- *         required: true
- *         description: ID of the student making the payment
- *         schema:
- *           type: string
+ *     description: Initiates a payment using the Kora API and stores transaction details. Returns checkout and redirect URLs for the frontend.
  *     requestBody:
  *       required: true
  *       content:
@@ -26,7 +19,6 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *               - amount
  *               - email
  *               - name
- *               - plan
  *             properties:
  *               amount:
  *                 type: number
@@ -40,22 +32,34 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *                 type: string
  *                 example: John Doe
  *                 description: Customer's full name
- *               plan:
- *                 type: string
- *                 enum: [Freemium, Premium, Lifetime Access Model]
- *                 example: Premium
- *                 description: The plan the user is subscribing to
  *     responses:
- *       302:
- *         description: Redirects to frontend with reference, checkout URL, and studentId
- *         headers:
- *           Location:
+ *       200:
+ *         description: Payment initialized successfully
+ *         content:
+ *           application/json:
  *             schema:
- *               type: string
- *             description: The URL to which the client is redirected
- *             example: https://legacy-builder.vercel.app/payment-status?reference=TCA-AF-ABC123&checkout_url=https%3A%2F%2Fcheckout.korapay.com%2Fabc123&studentId=60c72b2f9b1d8b4b9e6b8d8e
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Payment Successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: TCA-AF-ABC123XYZ789
+ *                       description: Unique payment reference
+ *                     checkout_url:
+ *                       type: string
+ *                       example: https://checkout.korapay.com/abc123
+ *                       description: Kora checkout URL
+ *                     redirect_url:
+ *                       type: string
+ *                       example: https://legacy-builder.vercel.app/payment-status?reference=TCA-AF-ABC123XYZ789
+ *                       description: Frontend redirect URL including the reference
  *       400:
- *         description: Missing required fields or student ID
+ *         description: Missing required fields
  *         content:
  *           application/json:
  *             schema:
@@ -78,7 +82,9 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
 
 
 
-transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKora);
+
+transactionKoraRouter.post("/initializeKoraPay", initializePaymentKora);
+
 
 /**
  * @swagger
@@ -86,7 +92,7 @@ transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKor
  *   get:
  *     summary: Verify Kora Payment
  *     tags: [Kora Payment]
- *     description: Verifies the status of a Kora payment transaction using the provided reference. After verification, updates the student's plan and redirects to a frontend URL (manually set in the server).
+ *     description: Verifies the status of a Kora payment transaction using the provided reference. Updates the payment status in the database and returns the updated record.
  *     parameters:
  *       - in: query
  *         name: reference
@@ -95,16 +101,36 @@ transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKor
  *         required: true
  *         description: The reference ID of the transaction to verify.
  *     responses:
- *       302:
- *         description: Redirects to frontend with payment status and student ID
- *         headers:
- *           Location:
+ *       200:
+ *         description: Payment verified successfully
+ *         content:
+ *           application/json:
  *             schema:
- *               type: string
- *             description: URL to which the user is redirected
- *             example: https://legacy-builder.vercel.app/payment-status?status=success&reference=ref_abc123&studentId=60c72b2f9b1d8b4b9e6b8d8e
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Payment Verification Successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *                     amount:
+ *                       type: number
+ *                       example: 5000
+ *                     reference:
+ *                       type: string
+ *                       example: TCA-AF-ABC123XYZ
+ *                     status:
+ *                       type: string
+ *                       example: Success
  *       400:
- *         description: Missing reference in the query
+ *         description: Payment verification failed
  *         content:
  *           application/json:
  *             schema:
@@ -112,17 +138,16 @@ transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKor
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Reference is required
- *       404:
- *         description: Transaction or Student not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Transaction not found
+ *                   example: Payment Verification Failed
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: TCA-AF-ABC123XYZ
+ *                     status:
+ *                       type: string
+ *                       example: Failed
  *       500:
  *         description: Internal Server Error
  *         content:
@@ -134,6 +159,7 @@ transactionKoraRouter.post("/initializeKoraPay/:studentId", initializePaymentKor
  *                   type: string
  *                   example: "Internal Server Error: Something went wrong"
  */
+
 
 transactionKoraRouter.get("/verifyKoraPay", verifyPaymentKora);
 
