@@ -107,7 +107,40 @@ exports.verifyPaymentKora = async (req, res) => {
         res.status(500).json({
             message: `Internal Server Error` + error.message
         });
+    try{
+        const {reference} = req.query;
+
+        const response = await axios.get(`https://api.korapay.com/merchant/api/v1/charges/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${SECRET_KEY_KORA}`
+            }
+        });
+
+        const {data} = response?.data;
+
+        //This Optional Chaining
+        if(data?.status && data?.status === "success"){
+            const payment = await transactionKoraModel.findOneAndUpdate({reference}, {status: "Success"}, {new: true});
+            res.status(200).json({
+                message: "Payment Verification Successfully",
+                data: payment
+            });
+        }else{
+            const payment = await transactionKoraModel.findOneAndUpdate({reference}, {status: "Failed"}, {new: true});
+            res.status(400).json({
+                message: "Payment Verification Failed",
+                data: payment
+            });
+        }
+
+    }catch(error){
+        console.log(error.message)
+        res.status(500).json({
+            message: `Internal Server Error` + error.message
+        });
     }
+}
+
 }
 
 exports.initialPaymentPaystack = async (req, res) => {
