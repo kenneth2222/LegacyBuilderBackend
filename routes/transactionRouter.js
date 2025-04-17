@@ -32,6 +32,11 @@ const {initializePaymentKora, verifyPaymentKora, initialPaymentPaystack, verifyP
  *                 type: string
  *                 example: John Doe
  *                 description: Customer's full name
+ *               plan:
+ *                 type: string
+ *                 enum: [Freemium, Premium, Lifetime Access Model]
+ *                 example: Premium
+ *                 description: The plan the user is subscribing to
  *     responses:
  *       200:
  *         description: Payment initialized successfully
