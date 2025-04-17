@@ -17,7 +17,6 @@ const transactionSchemaKora = new mongoose.Schema({
     plan: {
         type: String,
         enum: ["Freemium", "Premium", "Lifetime Access"],
-        required: true
       },
     reference: {
         type: String,
