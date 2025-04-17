@@ -39,7 +39,7 @@ exports.initializePaymentKora = async (req, res) => {
       },
       currency: "NGN",
       reference: ref,
-      redirect_url: `https://legacy-builder.vercel.app/verifyingPayment/${ref}`,
+      redirect_url: `https://legacy-builder.vercel.app/verifyingPayment`,
     };
 
     const response = await axios.post(
