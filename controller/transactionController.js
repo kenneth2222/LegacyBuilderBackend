@@ -52,21 +52,16 @@ exports.initializePaymentKora = async (req, res) => {
       }
     );
 
-    const { data } = response?.data;
+        const {data} = response?.data;
+        const payment = new transactionKoraModel({
+            name,
+            email,
+            amount,
+            reference: paymentData.reference,
+            paymentDate: formattedDate,
+        });
 
-    const validPlan = allowedPlans.includes(plan) ? plan : "Freemium"; 
-    // console.log(`Valid Plan: ${validPlan}`);
-
-    const payment = new transactionKoraModel({
-      name,
-      email,
-      amount,
-      plan: validPlan,
-      reference: paymentData.reference,
-      paymentDate: formattedDate,
-      status: "Pending",
-    });
-    // console.log(`Plan: ${plan}`);
+        // console.log("Payment Reference:", paymentData.reference);
 
     await payment.save();
 
