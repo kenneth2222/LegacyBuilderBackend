@@ -39,7 +39,7 @@ exports.initializePaymentKora = async (req, res) => {
       },
       currency: "NGN",
       reference: ref,
-      redirect_url: `https://legacy-builder.vercel.app/verifyingPayment/${ref}`,
+      redirect_url: `https://legacy-builder.vercel.app/verifyingPayment`,
     };
 
     const response = await axios.post(
@@ -66,7 +66,7 @@ exports.initializePaymentKora = async (req, res) => {
       paymentDate: formattedDate,
       status: "Pending",
     });
-    console.log(`Plan: ${plan}`);
+    // console.log(`Plan: ${plan}`);
 
     await payment.save();
 
