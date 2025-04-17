@@ -34,7 +34,7 @@ exports.initializePaymentKora = async (req, res) => {
             },
             currency: "NGN",
             reference: ref,
-            redirect_url: `https://legacy-builder.vercel.app/payment-status?reference=${ref}`
+            redirect_url: `https://legacy-builder.vercel.app/verifyingPayment/${ref}`
         }
 
         const response = await axios.post("https://api.korapay.com/merchant/api/v1/charges/initialize", paymentData, {
