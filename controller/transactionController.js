@@ -59,6 +59,7 @@ exports.initializePaymentKora = async (req, res) => {
             amount,
             reference: paymentData.reference,
             paymentDate: formattedDate,
+            plan
         });
 
         // console.log("Payment Reference:", paymentData.reference);
@@ -127,9 +128,10 @@ exports.verifyPaymentKora = async (req, res) => {
 
     
     if (updatedStatus === "Success") {
-      const finalPlan = allowedPlans.includes(payment.plan)
-        ? payment.plan
-        : "Freemium";
+      const finalPlan = allowedPlans.includes(payment.plan) ? payment.plan : "Freemium";
+
+        console.log("The Plan from user:" + payment.plan)
+      console.log("The final the controller received" + finalPlan)
 
       const student = await studentModel.findOneAndUpdate(
         { email: payment.email },
