@@ -67,7 +67,7 @@ exports.getMockQuestions = async (req, res) => {
     }
 
     const subjectName = subject.split(',');
-    const possibleYears = [2002, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
+    const possibleYears = [2000, 2001, 2002, 2003, 2004, 2005];
     let availableYears = [];
 
     for (const year of possibleYears) {
