@@ -190,7 +190,11 @@ exports.verifyStudent = async (req, res) => {
 
 exports.loginStudent = async (req, res) => {
   try {
+
+    console.log("Incoming login body:", req.body);
+
     const validatedData = await validate(req.body, loginSchema);
+    console.log("Validated login data:", validatedData);
 
     const { email, password } = validatedData;
 

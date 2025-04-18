@@ -13,12 +13,21 @@ exports.registerStudentSchema = joi.object().keys({
     'string.email': "Invalid email format",
     "any.required": "Email is required"
 }),
-  password: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
+password: joi.string().trim()
+  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/)
+  .required()
   .messages({
     "any.required": "Password is required",
     "string.empty": "Password cannot be empty",
-    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character [!@#$%^&*]"
-}),
+    "string.pattern.base": "Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character",
+  }),
+
+//   password: joi.string().trim().pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).required()
+//   .messages({
+//     "any.required": "Password is required",
+//     "string.empty": "Password cannot be empty",
+//     "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character [!@#$%^&*]"
+// }),
 //   username: joi.string().min(3).max(30).trim().pattern(/^[A-Za-z\s]+$/).required()
 //   .messages({
 //     'any.required': 'Username is required',
