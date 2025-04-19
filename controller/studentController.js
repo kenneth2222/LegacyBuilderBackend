@@ -1,14 +1,10 @@
-// const userModel = require('../model/userModel');
 require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
-// const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
 const sharp = require("sharp");
 const path = require("path");
-// const fs = require("fs");
 const fs = require('fs').promises;
 const cloudinary = require("../config/cloudinary");
-// const cloudinary = require("cloudinary").v2;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { verify, reset } = require("../utils/html");
@@ -63,9 +59,6 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    // const link = `${req.protocol}://${req.get(
-    //   "host"
-    // )}/api/v1/verify/student/${token}`;
     const link = `https://legacy-builder.vercel.app/verify/${token}`;
     const firstName = student.fullName.split(" ")[0];
 
@@ -134,9 +127,6 @@ exports.verifyStudent = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "5mins" }
           );
-          // const link = `${req.protocol}://${req.get(
-          //   "host"
-          // )}/api/v1/verify/student/${newToken}`;
           const link = `https://legacy-builder.vercel.app/verify/${newToken}`;
           const firstName = student.fullName.split(" ")[0];
 
@@ -172,7 +162,6 @@ exports.verifyStudent = async (req, res) => {
         res.status(200).json({
           message: "Account verified successfully",
         });
-        // return res.redirect(`https://legacy-builder.vercel.app/verify/${token}`);
       }
     });
   } catch (error) {
@@ -233,10 +222,6 @@ exports.loginStudent = async (req, res) => {
         { expiresIn: "1day" }
       );
      
-      // const link = `${req.protocol}://${req.get(
-      //   "host"
-      // )}/api/v1/verify/student/${token}`;
-      // const link = `${baseUrl}/api/v1/verify/student/${token}`;
       const link = `https://legacy-builder.vercel.app/verify/${token}`;
       const firstName = student.fullName.split(" ")[0];
 
@@ -300,9 +285,7 @@ exports.forgotStudentPassword = async (req, res) => {
     const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET, {
       expiresIn: "15mins",
     });
-    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     const link = `https://legacy-builder.vercel.app/resetpassword/${token}`; // consumed post link
-    // const link = `${baseUrl}/api/v1/reset_password/student/${token}`; // consumed post link
     const firstName = student.fullName.split(" ")[0];
 
     const mailOptions = {
@@ -668,7 +651,6 @@ exports.updateImage = async (req, res) => {
       console.error("Error deleting local image:", err.message);
     });
 
-    // Update student image data in the database
     student.image = {
       public_id: result.public_id,
       imageUrl: result.secure_url,
@@ -913,18 +895,6 @@ exports.myRating = async (req, res) => {
       });
     }
 
-    // const allowedSubjects = [
-    //   'English',
-    //   'Mathematics',
-    //   'Physics',
-    //   'Chemistry',
-    //   'Biology',
-    //   'Literature in English',
-    //   'Economics',
-    //   'Geography',
-    //   'Government',
-    //   'History'
-    // ];
 
     const existingRatingIndex = student.myRating.findIndex((rating) => rating.subject === subject);
 
