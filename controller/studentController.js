@@ -371,14 +371,22 @@ exports.resetStudentPassword = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(400).json({
-        message: "Session expired. Please enter your email to resend link",
-      });
-    }
-    res.status(500).json({
-      message: "Error resetting password",
+
+  if (error.name === "TokenExpiredError") {
+    return res.status(400).json({
+      message: "Session expired. Please enter your email to resend link",
     });
+  }
+
+  if (error.name === "JsonWebTokenError") {
+    return res.status(400).json({
+      message: "Invalid token. Please request a new password reset link.",
+    });
+  }
+
+  return res.status(500).json({
+    message: "Error resetting password",
+  });
   }
 };
 
@@ -432,30 +440,6 @@ exports.changeStudentPassword = async (req, res) => {
   }
 };
 
-// exports.logoutUser = async (req, res) => {
-//   try {
-//     const validatedData = await validate(req.body, logoutSchema)
-
-//     const { email, username, password } = validatedData;
-//     const user = await userModel.findById(req.user.userId)
-//     if(!user){
-//       return res.status(400).json({
-//         message: 'User not found',
-//     })
-
-//   }
-//   user.isLoggedIn = false
-//   await user.save()
-
-//   res.status(200).json({ message: 'Logged out successfully' });
-
-//   } catch (error) {
-//     console.log(error.message)
-//      res.status(500).json({
-//       message: "Error Logout failed",error: error.message
-//     })
-//   }
-// };
 
 exports.logoutStudent = async (req, res) => {
   try {
