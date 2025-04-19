@@ -52,6 +52,7 @@ exports.initializePaymentKora = async (req, res) => {
       }
     );
 
+        
         const {data} = response?.data;
         const payment = new transactionKoraModel({
             name,
@@ -59,9 +60,10 @@ exports.initializePaymentKora = async (req, res) => {
             amount,
             reference: paymentData.reference,
             paymentDate: formattedDate,
+            plan
         });
 
-        // console.log("Payment Reference:", paymentData.reference);
+        
 
     await payment.save();
 
@@ -122,14 +124,10 @@ exports.verifyPaymentKora = async (req, res) => {
         message: "Payment not found" 
     });
     }
-
-    // console.log("Payment Plan:", payment.plan);
-
-    
+ 
     if (updatedStatus === "Success") {
-      const finalPlan = allowedPlans.includes(payment.plan)
-        ? payment.plan
-        : "Freemium";
+      const finalPlan = allowedPlans.includes(payment.plan) ? payment.plan : "Freemium";
+
 
       const student = await studentModel.findOneAndUpdate(
         { email: payment.email },
