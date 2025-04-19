@@ -2,7 +2,7 @@
 require("dotenv").config();
 const studentModel = require("../model/student");
 const scoreBoardModel = require("../model/scoreBoard");
-const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
+// const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get("host")}`;
 const sharp = require("sharp");
 const path = require("path");
 // const fs = require("fs");
@@ -495,7 +495,7 @@ exports.getStudentsWithPointsAndResults = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Internal Server Error",
     });
   }
 };
@@ -519,7 +519,7 @@ exports.filterStudentsWithPointsAndResultsBySubject = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Internal Server Error",
     });
   }
 };
