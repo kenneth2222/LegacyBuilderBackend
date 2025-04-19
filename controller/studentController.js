@@ -608,7 +608,6 @@ exports.updateImage = async (req, res) => {
       });
     }
 
-
     // Delete the previous image from Cloudinary
     if (student.image && student.image.public_id) {
       await cloudinary.uploader.destroy(student.image.public_id);
